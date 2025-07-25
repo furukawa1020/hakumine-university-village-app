@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:netlify": "npm install && npm run build:verbose",
-    "build:verbose": "NODE_OPTIONS='--max-old-space-size=4096' next build --debug",
+    "build:verbose": "next build --debug",
     "build:debug": "npm install && npm run build --verbose",
     "start": "next start",
     "lint": "next lint",

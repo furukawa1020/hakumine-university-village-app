@@ -54,11 +54,13 @@ const nextConfig = {
 
   // Webpack設定
   webpack: (config, { isServer }) => {
-    // メモリ使用量を制限
+    // バンドルサイズ最適化
     config.optimization = {
       ...config.optimization,
       splitChunks: {
         chunks: 'all',
+        minSize: 20000,
+        maxSize: 244000,
         cacheGroups: {
           default: {
             minChunks: 1,
@@ -70,18 +72,35 @@ const nextConfig = {
             name: 'vendors',
             priority: -10,
             chunks: 'all',
+            maxSize: 244000,
+          },
+          firebase: {
+            test: /[\\/]node_modules[\\/]firebase/,
+            name: 'firebase',
+            priority: 10,
+            chunks: 'all',
+            maxSize: 244000,
           },
         },
       },
     }
 
-    // Firebase関連の外部化
+    // Firebase関連の外部化とポリフィル
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
         net: false,
         tls: false,
+        crypto: false,
+        stream: false,
+        url: false,
+        zlib: false,
+        http: false,
+        https: false,
+        assert: false,
+        os: false,
+        path: false,
       }
     }
 

@@ -86,9 +86,34 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
 
 #### Q: ビルドが失敗する場合
 A: 以下を確認：
-1. Node.js 20が設定されているか
-2. 環境変数が正しく設定されているか  
-3. `package-lock.json`がコミットされているか
+1. **Node.js バージョン**: Node.js 20が設定されているか
+2. **環境変数**: Firebase環境変数が正しく設定されているか  
+3. **依存関係**: `package-lock.json`がコミットされているか
+4. **メモリ制限**: `NODE_OPTIONS="--max-old-space-size=4096"`が設定されているか
+
+#### Q: "Non-zero exit code" エラーが発生する場合
+A: 以下の対策を実行：
+```bash
+# 1. キャッシュをクリア
+npm run clean
+
+# 2. 依存関係を再インストール
+npm install
+
+# 3. ビルドをデバッグモードで実行
+npm run build:verbose
+```
+
+#### Q: Firebase接続エラーが発生する場合
+A: 環境変数にデフォルト値が設定されているので、デモモードで動作します：
+- APIキーが未設定でも `demo-api-key` が使用される
+- プロジェクトIDが未設定でも `demo-project` が使用される
+
+#### Q: バンドルサイズが大きすぎる場合
+A: Webpack設定で最適化済み：
+- Firebase専用チャンク分割
+- 最大244KBでチャンク分割
+- 不要なポリフィル除去済み
 
 #### Q: アバターが表示されない場合
 A: Firebase設定を確認：
