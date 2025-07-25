@@ -1,0 +1,96 @@
+0 verbose cli C:\Apps\nodejs\node.exe C:\Apps\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.2.3
+2 info using node@v18.19.0
+3 timing npm:load:whichnode Completed in 3ms
+4 timing config:load:defaults Completed in 3ms
+5 timing config:load:file:C:\Users\wakuw\AppData\Local\nvm\v18.19.0\node_modules\npm\npmrc Completed in 3ms
+6 timing config:load:builtin Completed in 4ms
+7 warn config production Use `--omit=dev` instead.
+8 timing config:load:cli Completed in 4ms
+9 timing config:load:env Completed in 2ms
+10 warn config shrinkwrap Use the --package-lock setting instead.
+11 timing config:load:file:C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app\.npmrc Completed in 2ms
+12 timing config:load:project Completed in 8ms
+13 timing config:load:file:C:\Users\wakuw\.npmrc Completed in 0ms
+14 timing config:load:user Completed in 0ms
+15 timing config:load:file:C:\Apps\nodejs\etc\npmrc Completed in 0ms
+16 timing config:load:global Completed in 1ms
+17 timing config:load:setEnvs Completed in 1ms
+18 timing config:load Completed in 24ms
+19 timing npm:load:configload Completed in 24ms
+20 timing config:load:flatten Completed in 5ms
+21 timing npm:load:mkdirpcache Completed in 1ms
+22 timing npm:load:mkdirplogs Completed in 0ms
+23 verbose title npm ci
+24 verbose argv "ci" "--production" "false"
+25 timing npm:load:setTitle Completed in 1ms
+26 timing npm:load:display Completed in 5ms
+27 verbose logfile logs-max:10 dir:C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app\.npm\_logs\2025-07-25T05_01_49_439Z-
+28 verbose logfile C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app\.npm\_logs\2025-07-25T05_01_49_439Z-debug-0.log
+29 timing npm:load:logFile Completed in 18ms
+30 timing npm:load:timers Completed in 0ms
+31 timing npm:load:configScope Completed in 0ms
+32 timing npm:load Completed in 114ms
+33 timing arborist:ctor Completed in 1ms
+34 verbose loadVirtual Error: loadVirtual requires existing shrinkwrap file
+34 verbose loadVirtual     at Arborist.loadVirtual (C:\Users\wakuw\AppData\Local\nvm\v18.19.0\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\load-virtual.js:51:18)
+34 verbose loadVirtual     at async CI.exec (C:\Users\wakuw\AppData\Local\nvm\v18.19.0\node_modules\npm\lib\commands\ci.js:48:5)
+34 verbose loadVirtual     at async module.exports (C:\Users\wakuw\AppData\Local\nvm\v18.19.0\node_modules\npm\lib\cli-entry.js:61:5)
+35 timing command:ci Completed in 11ms
+36 verbose stack Error: 
+36 verbose stack The `npm ci` command can only install with an existing package-lock.json or
+36 verbose stack npm-shrinkwrap.json with lockfileVersion >= 1. Run an install with npm@5 or
+36 verbose stack later to generate a package-lock.json file, then try again.
+36 verbose stack
+36 verbose stack Clean install a project
+36 verbose stack
+36 verbose stack Usage:
+36 verbose stack npm ci
+36 verbose stack
+36 verbose stack Options:
+36 verbose stack [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+36 verbose stack [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+36 verbose stack [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+36 verbose stack [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+36 verbose stack [--no-bin-links] [--no-fund] [--dry-run]
+36 verbose stack [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+36 verbose stack [-ws|--workspaces] [--include-workspace-root] [--install-links]
+36 verbose stack
+36 verbose stack aliases: clean-install, ic, install-clean, isntall-clean
+36 verbose stack
+36 verbose stack Run "npm help ci" for more info
+36 verbose stack     at CI.usageError (C:\Users\wakuw\AppData\Local\nvm\v18.19.0\node_modules\npm\lib\base-command.js:113:26)
+36 verbose stack     at C:\Users\wakuw\AppData\Local\nvm\v18.19.0\node_modules\npm\lib\commands\ci.js:54:18
+36 verbose stack     at async CI.exec (C:\Users\wakuw\AppData\Local\nvm\v18.19.0\node_modules\npm\lib\commands\ci.js:48:5)
+36 verbose stack     at async module.exports (C:\Users\wakuw\AppData\Local\nvm\v18.19.0\node_modules\npm\lib\cli-entry.js:61:5)
+37 verbose cwd C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app
+38 verbose Windows_NT 10.0.26100
+39 verbose node v18.19.0
+40 verbose npm  v10.2.3
+41 error code EUSAGE
+42 error
+42 error The `npm ci` command can only install with an existing package-lock.json or
+42 error npm-shrinkwrap.json with lockfileVersion >= 1. Run an install with npm@5 or
+42 error later to generate a package-lock.json file, then try again.
+42 error
+42 error Clean install a project
+42 error
+42 error Usage:
+42 error npm ci
+42 error
+42 error Options:
+42 error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+42 error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+42 error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+42 error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+42 error [--no-bin-links] [--no-fund] [--dry-run]
+42 error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+42 error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+42 error
+42 error aliases: clean-install, ic, install-clean, isntall-clean
+42 error
+42 error Run "npm help ci" for more info
+43 verbose exit 1
+44 timing npm Completed in 996ms
+45 verbose code 1
+46 error A complete log of this run can be found in: C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app\.npm\_logs\2025-07-25T05_01_49_439Z-debug-0.log

@@ -1,0 +1,36 @@
+0 verbose cli C:\Apps\nodejs\node.exe C:\Apps\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.2.3
+2 info using node@v18.19.0
+3 timing npm:load:whichnode Completed in 4ms
+4 timing config:load:defaults Completed in 4ms
+5 timing config:load:file:C:\Users\wakuw\AppData\Local\nvm\v18.19.0\node_modules\npm\npmrc Completed in 1ms
+6 timing config:load:builtin Completed in 2ms
+7 timing config:load:cli Completed in 7ms
+8 timing config:load:env Completed in 2ms
+9 warn config shrinkwrap Use the --package-lock setting instead.
+10 timing config:load:file:C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app\.npmrc Completed in 3ms
+11 timing config:load:project Completed in 4ms
+12 timing config:load:file:C:\Users\wakuw\.npmrc Completed in 0ms
+13 timing config:load:user Completed in 1ms
+14 timing config:load:file:C:\Apps\nodejs\etc\npmrc Completed in 0ms
+15 timing config:load:global Completed in 0ms
+16 timing config:load:setEnvs Completed in 2ms
+17 timing config:load Completed in 23ms
+18 timing npm:load:configload Completed in 23ms
+19 timing config:load:flatten Completed in 5ms
+20 timing npm:load:mkdirpcache Completed in 0ms
+21 timing npm:load:mkdirplogs Completed in 0ms
+22 verbose title npm config get registry
+23 verbose argv "config" "get" "registry" "--no-workspaces"
+24 timing npm:load:setTitle Completed in 2ms
+25 timing npm:load:display Completed in 2ms
+26 verbose logfile logs-max:10 dir:C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app\.npm\_logs\2025-07-25T05_05_27_853Z-
+27 verbose logfile C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app\.npm\_logs\2025-07-25T05_05_27_853Z-debug-0.log
+28 timing npm:load:logFile Completed in 22ms
+29 timing npm:load:timers Completed in 0ms
+30 timing npm:load:configScope Completed in 0ms
+31 timing npm:load Completed in 111ms
+32 timing command:config Completed in 2ms
+33 verbose exit 0
+34 timing npm Completed in 506ms
+35 info ok

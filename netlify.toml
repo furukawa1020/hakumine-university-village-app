@@ -1,10 +1,26 @@
 [build]
-  publish = ".next"
-  command = "npm run build"
+  publish = "out"
+  command = "npm run build:netlify"
 
 [build.environment]
   NODE_VERSION = "20"
   NPM_VERSION = "10"
+  # Next.js build cache
+  NEXT_CACHE = "true"
+  # NPM cache configuration
+  NPM_CONFIG_CACHE = ".npm"
+
+# Build cache configuration
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
 
 [[redirects]]
   from = "/*"

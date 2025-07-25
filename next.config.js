@@ -28,9 +28,15 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // 実験的機能（必要に応じて）
+  // ビルド最適化設定
   experimental: {
     esmExternals: true,
+    cpus: 1, // Netlify用CPU制限
+  },
+
+  // 本番環境でのコンソール削除
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
   },
 }
 
