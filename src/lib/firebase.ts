@@ -5,21 +5,20 @@ import { getStorage } from 'firebase/storage';
 
 // Firebase設定（Node.js 18 + Firebase v10対応）
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'demo-api-key',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'demo.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'demo-project',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'demo.appspot.com',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '123456789',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || 'demo-app-id',
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-DEMO'
+  apiKey: "AIzaSyAEq7IxIneu-SA6-d-xdCZC2OU8cArJr84",
+  authDomain: "hakumine-university-village.firebaseapp.com",
+  projectId: "hakumine-university-village",
+  storageBucket: "hakumine-university-village.firebasestorage.app",
+  messagingSenderId: "710646321611",
+  appId: "1:710646321611:web:29562c376f4127f0a1664e",
+  measurementId: "G-0NBD8MDRZX"
 };
 
-// デバッグ用：環境変数の確認
-console.log('Firebase Config Debug:', {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? 'Set' : 'Not Set',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? 'Set' : 'Not Set',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? 'Set' : 'Not Set',
-  actualApiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.substring(0, 10) + '...'
+// デバッグ用：設定値の確認
+console.log('Firebase Config Debug (Hardcoded):', {
+  apiKey: firebaseConfig.apiKey?.substring(0, 10) + '...',
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId
 });
 
 // Firebase初期化（エラーハンドリング付き）
