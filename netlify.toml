@@ -1,6 +1,6 @@
 [build]
-  publish = "out"
-  command = "npm run build:netlify"
+  publish = ".next"
+  command = "npm run build"
   # ビルドタイムアウトを延長
   functions = "netlify/functions"
   command_origin_timeout = 20

@@ -70,28 +70,35 @@ export interface Quest {
   id: string;
   title: string;
   description: string;
+  detailedDescription?: string;
   startDateTime: Date;
   endDateTime: Date;
   place: string;
   capacity?: number;
-  currentParticipants: number;
+  participants: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  category: string;
+  rewards: string[];
+  organizer: string;
+  organizerContact?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  status: 'open' | 'full' | 'closed';
   imageUrl?: string;
-  createdBy: string; // 運営者のUID
-  status: 'active' | 'completed' | 'cancelled';
-  tags?: string[];
   requirements?: string;
+  notes?: string;
+  participantsList: QuestParticipant[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 // クエスト参加情報
 export interface QuestParticipant {
-  questId: string;
-  userId: string;
-  status: 'registered' | 'participating' | 'completed' | 'cancelled';
-  completionReport?: QuestCompletionReport;
+  id: string;
+  name: string;
   joinedAt: Date;
-  updatedAt: Date;
 }
 
 export interface QuestCompletionReport {
