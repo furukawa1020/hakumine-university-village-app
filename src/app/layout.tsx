@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { PWAInstallButton } from "@/components/ui/PWAInstallButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,15 +23,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "白峰大学村アプリ"
-  },
-  icons: {
-    icon: [
-      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" }
-    ],
-    apple: [
-      { url: "/icons/icon-180x180.png", sizes: "180x180", type: "image/png" }
-    ]
   }
 };
 
@@ -40,11 +32,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ja">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                      console.log('Service Worker registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                      console.log('Service Worker registration failed: ', registrationError);
+                    });
+                });
+              }
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <PWAInstallButton />
       </body>
     </html>
   );

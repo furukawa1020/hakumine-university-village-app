@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { InstallButton } from "@/components/ui/InstallButton";
 import { Mountain, Users, MapPin, Calendar, MessageCircle, BookOpen, Sparkles, Shield, Wifi } from "lucide-react";
 import Link from "next/link";
 
@@ -44,6 +45,12 @@ export default function Home() {
               <br />
               ドット風アバターで白峰の自然を舞台に、新しい学びの体験を始めよう。
             </p>
+            
+            {/* PWAインストールボタン */}
+            <div className="max-w-md mx-auto mb-8">
+              <InstallButton />
+            </div>
+            
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-4">

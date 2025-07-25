@@ -1,0 +1,22 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="192" height="192" rx="24" fill="#2563eb"/>
+  
+  <!-- 雪山のシルエット -->
+  <path d="M20 140 L60 80 L96 60 L130 80 L172 140 L20 140 Z" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+  <path d="M40 150 L80 100 L120 100 L160 150 L40 150 Z" fill="#e2e8f0"/>
+  
+  <!-- 白峰の「白」文字 -->
+  <text x="96" y="130" font-family="serif" font-size="32" font-weight="bold" text-anchor="middle" fill="#1e40af">白</text>
+  
+  <!-- 雪のキラキラ -->
+  <circle cx="70" cy="90" r="3" fill="#ffffff" opacity="0.8"/>
+  <circle cx="120" cy="85" r="2" fill="#ffffff" opacity="0.6"/>
+  <circle cx="50" cy="110" r="2" fill="#ffffff" opacity="0.7"/>
+  <circle cx="140" cy="105" r="3" fill="#ffffff" opacity="0.9"/>
+  
+  <!-- 村のアクセント（小さな家） -->
+  <rect x="80" y="150" width="8" height="8" rx="1" fill="#fbbf24"/>
+  <rect x="100" y="145" width="6" height="10" rx="1" fill="#f59e0b"/>
+  <rect x="90" y="148" width="5" height="7" rx="1" fill="#d97706"/>
+</svg>
