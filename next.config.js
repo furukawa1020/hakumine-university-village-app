@@ -61,15 +61,15 @@ const nextConfig = {
     },
   } : {},
 
-  // Webpack設定（Netlify対応簡略版）
-  webpack: (config, { isServer }) => {
+  // Webpack設定（Netlify + Firebase対応）
+  webpack: (config, { isServer, dev }) => {
     // TypeScriptパス解決のエイリアス設定
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': require('path').resolve(__dirname, 'src'),
     };
 
-    // サーバーサイドでの Node.js polyfill を無効化
+    // Firebase関連の最適化（クライアントサイド）
     if (!isServer) {
       config.resolve.fallback = {
         fs: false,
@@ -84,7 +84,39 @@ const nextConfig = {
         assert: false,
         os: false,
         path: false,
+        // Firebase関連の追加fallback
+        'child_process': false,
+        'worker_threads': false,
+        'perf_hooks': false,
+        'dns': false,
       }
+    }
+
+    // Firebase/Node.js関連モジュールの外部化（サーバーサイドビルド時）
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        '@grpc/grpc-js': 'commonjs @grpc/grpc-js',
+        '@grpc/proto-loader': 'commonjs @grpc/proto-loader',
+        'firebase-admin': 'commonjs firebase-admin',
+        'firebase-functions': 'commonjs firebase-functions',
+      });
+
+      // Firebase関連モジュールをバンドルから除外
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@firebase/auth': false,
+        '@firebase/firestore': false,
+        '@firebase/storage': false,
+        '@firebase/messaging': false,
+      };
+    }
+
+    // プロダクションビルドでの最適化
+    if (!dev) {
+      // Firebase SDKの tree shaking を促進
+      config.optimization = config.optimization || {};
+      config.optimization.sideEffects = false;
     }
 
     return config

@@ -1,54 +1,75 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
-// Firebase設定（Node.js 18 + Firebase v10対応）
-// 一時的にテスト用のプロジェクト設定（動作確認用）
+// Firebase設定（環境変数を使用）
 const firebaseConfig = {
-  apiKey: "AIzaSyDOCAbC123dEf456GhI789jKl012-MnO34", // テスト用
-  authDomain: "demo-project-12345.firebaseapp.com", // テスト用
-  projectId: "demo-project-12345", // テスト用
-  storageBucket: "demo-project-12345.appspot.com", // テスト用
-  messagingSenderId: "123456789012", // テスト用
-  appId: "1:123456789012:web:0123456789abcdef", // テスト用
-  measurementId: "G-DEMO123456" // テスト用
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || ''
 };
 
-// デバッグ用：値の確認
-console.log('Firebase Config Debug (Test Project):', {
-  apiKey: firebaseConfig.apiKey.substring(0, 10) + '...',
-  projectId: firebaseConfig.projectId,
-  authDomain: firebaseConfig.authDomain
-});
+// Firebase Services（動的初期化）
+let firebaseApp: FirebaseApp | null = null;
+let firebaseAuth: Auth | null = null;
+let firebaseDB: Firestore | null = null;
+let firebaseStorage: FirebaseStorage | null = null;
 
-// Firebase初期化（エラーハンドリング付き）
-let app;
-let auth;
-let db;
-let storage;
+// Firebase初期化関数（遅延初期化）
+function initializeFirebase() {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    // すでに初期化済みの場合は既存のアプリを使用
+    if (getApps().length > 0) {
+      firebaseApp = getApps()[0];
+    } else {
+      // 設定値チェック
+      if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+        throw new Error('Firebase configuration is incomplete');
+      }
+      firebaseApp = initializeApp(firebaseConfig);
+    }
 
-try {
-  app = initializeApp(firebaseConfig);
-  
-  // Services初期化（Node.js 18互換）
-  auth = getAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-  
-  console.log('Firebase initialized successfully');
-} catch (error) {
-  console.warn('Firebase initialization failed:', error);
-  // Netlifyビルド時のフォールバック
-  app = null;
-  auth = null;
-  db = null;
-  storage = null;
+    // Services を初期化
+    if (firebaseApp && !firebaseAuth) {
+      firebaseAuth = getAuth(firebaseApp);
+      firebaseDB = getFirestore(firebaseApp);
+      firebaseStorage = getStorage(firebaseApp);
+    }
+
+    return { app: firebaseApp, auth: firebaseAuth, db: firebaseDB, storage: firebaseStorage };
+  } catch (error) {
+    console.warn('Firebase initialization failed:', error);
+    return null;
+  }
 }
 
-export { auth, db, storage };
+// Getter関数（使用時に初期化）
+export function getFirebaseAuth(): Auth | null {
+  if (!firebaseAuth) initializeFirebase();
+  return firebaseAuth;
+}
 
-// Messaging（Netlifyビルド互換性のため無効化）
+export function getFirebaseDB(): Firestore | null {
+  if (!firebaseDB) initializeFirebase();
+  return firebaseDB;
+}
+
+export function getFirebaseStorage(): FirebaseStorage | null {
+  if (!firebaseStorage) initializeFirebase();
+  return firebaseStorage;
+}
+
+// 後方互換性のため（既存コードで使用されている場合）
+export const auth = getFirebaseAuth();
+export const db = getFirebaseDB();
+export const storage = getFirebaseStorage();
+
+// Messaging は無効化
 export const messaging = null;
-
-export default app;
