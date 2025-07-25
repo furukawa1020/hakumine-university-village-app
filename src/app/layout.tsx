@@ -34,20 +34,47 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96x96.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-72x72.png" />
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="白峰大学村" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
+                  navigator.serviceWorker.register('/sw.js', { scope: '/' })
                     .then(function(registration) {
-                      console.log('Service Worker registered: ', registration);
+                      console.log('✅ Service Worker registered successfully:', registration);
+                      console.log('Scope:', registration.scope);
+                      
+                      // アップデートをチェック
+                      registration.addEventListener('updatefound', () => {
+                        console.log('🔄 Service Worker update found');
+                      });
                     })
                     .catch(function(registrationError) {
-                      console.log('Service Worker registration failed: ', registrationError);
+                      console.error('❌ Service Worker registration failed:', registrationError);
                     });
                 });
+              } else {
+                console.log('❌ Service Worker not supported');
               }
+
+              // PWA インストール関連のデバッグ
+              window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('✅ PWA Install prompt ready');
+                e.preventDefault();
+                window.deferredPrompt = e;
+              });
+
+              window.addEventListener('appinstalled', (evt) => {
+                console.log('✅ PWA was installed successfully');
+              });
             `,
           }}
         />

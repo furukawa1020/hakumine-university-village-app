@@ -1,13 +1,17 @@
 {
   "name": "白峰大学村アプリ",
-  "short_name": "白峰大学村",
+  "short_name": "白峰村",
   "description": "白峰大学村参加学生向けコミュニティアプリ",
   "theme_color": "#2563eb",
-  "background_color": "#f8fafc",
+  "background_color": "#ffffff",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "scope": "/",
   "start_url": "/",
+  "id": "/",
+  "categories": ["education", "social"],
+  "lang": "ja",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -62,6 +66,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "クエスト",
+      "short_name": "クエスト",
+      "description": "利用可能なクエストを確認",
+      "url": "/quests",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "マップ",
+      "short_name": "マップ",
+      "description": "白峰エリアマップを開く",
+      "url": "/map",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ]
 }

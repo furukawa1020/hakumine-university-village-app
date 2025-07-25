@@ -62,11 +62,6 @@ export function PWAInstallButton() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     window.addEventListener('appinstalled', handleAppInstalled)
 
-    // iOSでも手動インストール案内を表示
-    if (iOS && !isStandalone && !isWebKit) {
-      setShowInstallBanner(true)
-    }
-
     // クリーンアップ
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
@@ -112,115 +107,134 @@ export function PWAInstallButton() {
       setIsInstalling(false)
     }
   }
+    window.addEventListener('appinstalled', handleAppInstalled)
+
+    // iOSの場合、少し遅れて表示
+    if (iOS && !isStandalone && !isWebKit) {
+      setTimeout(() => setShowInstallBanner(true), 2000)
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener('appinstalled', handleAppInstalled)
+    }
+  }, [])
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return
+
+    try {
+      await deferredPrompt.prompt()
+      const choiceResult = await deferredPrompt.userChoice
+      
+      if (choiceResult.outcome === 'accepted') {
+        console.log('ユーザーがPWAのインストールを受け入れました')
+      } else {
+        console.log('ユーザーがPWAのインストールを却下しました')
+      }
+      
+      setDeferredPrompt(null)
+      setShowInstallBanner(false)
+    } catch (error) {
+      console.error('インストールプロンプトでエラーが発生しました:', error)
+    }
+  }
 
   const handleDismiss = () => {
     setShowInstallBanner(false)
+    // 一定時間後に再表示するためのローカルストレージ管理
+    localStorage.setItem('pwa-install-dismissed', Date.now().toString())
   }
 
-  // インストール結果メッセージ
-  if (installResult) {
-    return (
-      <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-        installResult === 'success' 
-          ? 'bg-green-100 border border-green-200 text-green-800' 
-          : 'bg-red-100 border border-red-200 text-red-800'
-      }`}>
-        <div className="flex items-center gap-2">
-          {installResult === 'success' ? (
-            <CheckCircle className="h-5 w-5" />
-          ) : (
-            <X className="h-5 w-5" />
-          )}
-          <span className="font-medium">
-            {installResult === 'success' 
-              ? 'アプリのインストールが完了しました！' 
-              : 'インストールに失敗しました。'}
-          </span>
-        </div>
-      </div>
-    )
-  }
-
-  // すでにインストール済みまたはバナーを表示しない場合
+  // インストール済みまたは表示しない場合は何も表示しない
   if (isInstalled || !showInstallBanner) {
     return null
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md">
-      <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-4">
-        <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-            <Smartphone className="h-6 w-6 text-blue-600" />
-          </div>
-          
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 mb-1">
-              📱 アプリをインストール
-            </h3>
-            
-            {isIOS ? (
-              <div className="text-sm text-gray-600 mb-3">
-                <p className="mb-2">Safariで以下の手順でインストールできます：</p>
-                <ol className="text-xs space-y-1 pl-4 list-decimal">
-                  <li>下部の「共有」ボタンをタップ</li>
-                  <li>「ホーム画面に追加」を選択</li>
-                  <li>「追加」をタップ</li>
-                </ol>
+    <div className="fixed bottom-4 left-4 right-4 z-50 max-w-md mx-auto">
+      <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 animate-slide-up">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Smartphone className="w-6 h-6 text-white" />
               </div>
-            ) : deferredPrompt ? (
-              <p className="text-sm text-gray-600 mb-3">
-                ホーム画面に追加してより便利にご利用いただけます
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-gray-900 text-sm">
+                白峰大学村アプリをインストール
+              </h3>
+              <p className="text-xs text-gray-600 mt-1">
+                {isIOS 
+                  ? 'ホーム画面に追加してアプリとして使用できます'
+                  : 'ホーム画面に追加して快適に利用しましょう'
+                }
               </p>
-            ) : (
-              <p className="text-sm text-gray-600 mb-3">
-                このブラウザではPWAインストールがサポートされていません
-              </p>
-            )}
-            
-            <div className="flex gap-2">
-              {deferredPrompt && (
-                <Button
-                  onClick={handleInstallClick}
-                  size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                  disabled={isInstalling}
-                >
-                  {isInstalling ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      インストール中...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="h-4 w-4 mr-2" />
-                      インストール
-                    </>
-                  )}
-                </Button>
-              )}
-              
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDismiss}
+            className="text-gray-400 hover:text-gray-600 p-1"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <div className="mt-4 flex space-x-2">
+          {isIOS ? (
+            <div className="flex-1">
+              <div className="text-xs text-gray-600 mb-2">
+                📲 Safariの共有ボタン → 「ホーム画面に追加」をタップ
+              </div>
               <Button
                 onClick={handleDismiss}
                 size="sm"
                 variant="outline"
-                className="text-gray-600"
+                className="w-full text-xs"
+              >
+                了解しました
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Button
+                onClick={handleDismiss}
+                size="sm"
+                variant="outline"
+                className="text-xs"
               >
                 後で
               </Button>
-            </div>
-          </div>
-          
-          <Button
-            onClick={handleDismiss}
-            size="sm"
-            variant="ghost"
-            className="flex-shrink-0 w-8 h-8 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+              <Button
+                onClick={handleInstallClick}
+                size="sm"
+                className="flex-1 text-xs bg-blue-600 hover:bg-blue-700"
+              >
+                <Download className="w-4 h-4 mr-1" />
+                インストール
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
   )
 }
+
+// アニメーション用のCSS（globals.cssに追加）
+// @keyframes slide-up {
+//   from {
+//     transform: translateY(100%);
+//     opacity: 0;
+//   }
+//   to {
+//     transform: translateY(0);
+//     opacity: 1;
+//   }
+// }
+// .animate-slide-up {
+//   animation: slide-up 0.3s ease-out;
+// }
