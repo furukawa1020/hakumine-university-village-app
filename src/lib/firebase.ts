@@ -4,7 +4,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Firebase設定（Node.js 18 + Firebase v10対応）
-// 新しいWebアプリの設定値
+// 一時的にハードコード（テスト用）
 const firebaseConfig = {
   apiKey: "AIzaSyAEq7IxIneu-SA6-d-xdCZC2OU8cArJr84",
   authDomain: "hakumine-university-village.firebaseapp.com",
@@ -15,12 +15,10 @@ const firebaseConfig = {
   measurementId: "G-GJYCPZV15W"
 };
 
-// デバッグ用：設定値の確認
-console.log('Firebase Config Debug (New App v2):', {
-  apiKey: firebaseConfig.apiKey?.substring(0, 10) + '...',
-  authDomain: firebaseConfig.authDomain,
-  projectId: firebaseConfig.projectId,
-  appId: firebaseConfig.appId?.substring(0, 20) + '...',
+// デバッグ用：値の確認
+console.log('Firebase Config Debug (Hardcoded Test):', {
+  apiKey: firebaseConfig.apiKey.substring(0, 10) + '...',
+  appId: firebaseConfig.appId.substring(0, 30) + '...',
   measurementId: firebaseConfig.measurementId
 });
 
