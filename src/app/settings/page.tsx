@@ -111,8 +111,8 @@ export default function SettingsPage() {
             {user.isGuest && (
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-700">
-                  <strong>アカウント登録で完全版を利用：</strong>
-                  データの永続保存、チャット機能、同期機能が利用できます。
+                  <strong>アカウント登録でデータ永続保存：</strong>
+                  現在すべての機能をご利用いただけます。アカウント登録でデータを永続保存しましょう。
                 </p>
                 <Link href="/register" className="inline-block mt-2">
                   <Button size="sm" className="text-xs">

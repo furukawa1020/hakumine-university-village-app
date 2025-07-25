@@ -172,25 +172,74 @@ export default function DashboardPage() {
 
         {/* メインコンテンツ */}
         <main className="flex-1 p-4 lg:p-6">
-          {/* ゲストモード警告バナー */}
+          {/* ゲストモード情報バナー */}
           {user.isGuest && (
-            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 text-yellow-600 mt-0.5">⚠️</div>
+                <div className="w-5 h-5 text-blue-600 mt-0.5">🌟</div>
                 <div className="flex-1">
-                  <h3 className="font-medium text-yellow-800 mb-1">ゲストモードでご利用中</h3>
-                  <p className="text-sm text-yellow-700 mb-2">
-                    データは24時間保存され、チャット機能などは制限されています。
-                    完全な機能をご利用いただくには、アカウント登録をお勧めします。
+                  <h3 className="font-medium text-blue-800 mb-1">ゲストモードで全機能体験中</h3>
+                  <p className="text-sm text-blue-700 mb-2">
+                    24時間の間、すべての機能をお試しいただけます。
+                    気に入ったらアカウント登録でデータを永続保存しましょう！
                   </p>
                   <Link
                     href="/register"
-                    className="inline-flex items-center text-sm font-medium text-yellow-800 hover:text-yellow-900 underline"
+                    className="inline-flex items-center text-sm font-medium text-blue-800 hover:text-blue-900 underline"
                   >
-                    アカウント登録へ →
+                    アカウント登録でデータ保存 →
                   </Link>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* ゲストユーザー向けウェルカムメッセージ */}
+          {user.isGuest && (
+            <div className="mb-6">
+              <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-blue-100 rounded-full">
+                      <Users className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-blue-900 mb-2">
+                        🎉 白峰大学村アプリへようこそ！
+                      </h3>
+                      <p className="text-blue-800 mb-3">
+                        ゲストモードですべての機能をフルに体験できます！
+                        クエスト参加、チャット、カレンダー、マップなど、すべてお試しください。
+                      </p>
+                      
+                      <div className="bg-white/50 rounded-lg p-3 mb-4">
+                        <h4 className="font-medium text-blue-900 mb-2">✨ 利用できる全機能</h4>
+                        <ul className="text-sm text-blue-800 space-y-1">
+                          <li>• クエストの閲覧・参加・作成</li>
+                          <li>• チャットでのコミュニケーション</li>
+                          <li>• カレンダーでのスケジュール管理</li>
+                          <li>• マップでの位置情報共有</li>
+                          <li>• 日記ログの作成・公開</li>
+                          <li>• アバターのカスタマイズ</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Link href="/register">
+                          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                            アカウント登録でデータ永続保存
+                          </Button>
+                        </Link>
+                        <Link href="/avatar-guide">
+                          <Button size="sm" variant="outline" className="border-blue-300 text-blue-700">
+                            アプリ機能ガイド
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
 
@@ -199,7 +248,7 @@ export default function DashboardPage() {
             <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-2xl p-6 relative overflow-hidden">
               <div className="relative z-10">
                 <h2 className="text-2xl font-bold mb-2">
-                  おかえりなさい、{user.displayName}さん！
+                  {user.isGuest ? `ようこそ、${user.displayName}さん！` : `おかえりなさい、${user.displayName}さん！`}
                 </h2>
                 <p className="opacity-90">
                   今日は{currentTime.toLocaleDateString('ja-JP', { 
@@ -210,7 +259,7 @@ export default function DashboardPage() {
                   })}です
                 </p>
                 <p className="text-sm opacity-75 mt-1">
-                  白峰での素敵な一日をお過ごしください
+                  {user.isGuest ? 'ゲストモードで全機能をお試しください' : '白峰での素敵な一日をお過ごしください'}
                 </p>
               </div>
               <div className="absolute top-0 right-0 -translate-y-8 translate-x-8 opacity-20">

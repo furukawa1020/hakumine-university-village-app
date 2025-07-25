@@ -35,18 +35,18 @@ export function createGuestUser(displayName?: string): GuestUser {
     avatarConfig: getDefaultAvatarConfig(),
     settings: {
       privacy: {
-        showLocation: false, // ゲストはデフォルトで位置情報非表示
-        locationPrecision: 'disabled',
-        profileVisibility: 'limited',
-        logVisibility: 'private',
-        locationSharing: false,
-        locationGranularity: 'off',
+        showLocation: true, // ゲストも位置情報表示可能
+        locationPrecision: 'area',
+        profileVisibility: 'public',
+        logVisibility: 'public',
+        locationSharing: true,
+        locationGranularity: 'rough',
       },
       notifications: {
         questNotifications: true,
-        chatNotifications: false, // ゲストはチャット無効
+        chatNotifications: true, // ゲストもチャット利用可能
         systemNotifications: true,
-        emailNotifications: false,
+        emailNotifications: false, // メール通知のみ無効（メールアドレスがないため）
       },
     },
     status: 'online',
@@ -118,11 +118,10 @@ export function updateGuestLastActivity(guestUser: GuestUser): void {
 
 // ゲストモードで利用可能な機能をチェック
 export function isFeatureAvailableForGuest(feature: string): boolean {
+  // ゲストでも全ての機能を利用可能にする
+  // メール通知のみ制限（メールアドレスがないため）
   const guestRestrictedFeatures = [
-    'chat', // チャット機能
-    'push-notifications', // プッシュ通知
-    'data-sync', // データ同期
-    'profile-sharing', // プロフィール共有
+    'email-notifications', // メール通知のみ制限
   ];
   
   return !guestRestrictedFeatures.includes(feature);

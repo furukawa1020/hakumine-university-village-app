@@ -126,6 +126,70 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // ゲストユーザーチェック
+  if (user?.isGuest) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50">
+        <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+          <div className="px-4 py-4 flex items-center gap-3">
+            <Link href="/dashboard">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                ダッシュボード
+              </Button>
+            </Link>
+            <div className="flex items-center gap-2">
+              <MessageCircle className="h-6 w-6 text-yellow-600" />
+              <h1 className="text-lg font-bold text-gray-800">チャット</h1>
+            </div>
+          </div>
+        </header>
+
+        <div className="flex items-center justify-center min-h-[calc(100vh-73px)] p-4">
+          <Card className="max-w-md mx-auto">
+            <CardContent className="p-8 text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MessageCircle className="h-8 w-8 text-yellow-600" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-800 mb-2">
+                  チャット機能は会員限定です
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  ゲストモードではチャット機能をご利用いただけません。
+                  アカウント登録を行うと、他の参加者とリアルタイムでチャットできます。
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Link href="/register" className="block">
+                  <Button className="w-full">
+                    アカウント登録してチャットを利用
+                  </Button>
+                </Link>
+                <Link href="/dashboard">
+                  <Button variant="outline" className="w-full">
+                    ダッシュボードに戻る
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <h3 className="font-medium text-blue-900 mb-2">💬 チャット機能でできること</h3>
+                <ul className="text-sm text-blue-800 text-left space-y-1">
+                  <li>• リアルタイムメッセージ交換</li>
+                  <li>• 絵文字や画像の送信</li>
+                  <li>• 音声通話・ビデオ通話</li>
+                  <li>• クエスト専用チャンネル</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   // 絵文字リスト
   const emojis = [
     '😊', '😂', '🤣', '😍', '🥰', '😘', '😋', '😎', '🤔', '😅',

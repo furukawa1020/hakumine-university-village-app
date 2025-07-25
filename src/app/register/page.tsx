@@ -281,7 +281,7 @@ export default function RegisterPage() {
               </Button>
               
               <p className="text-xs text-gray-500 mt-2 text-center">
-                ゲストモードでは24時間の間、一部機能を体験できます
+                ゲストモードでは24時間の間、すべての機能をお試しいただけます
               </p>
             </div>
 

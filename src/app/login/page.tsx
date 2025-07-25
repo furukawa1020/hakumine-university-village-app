@@ -195,7 +195,7 @@ export default function LoginPage() {
               <p className="text-xs text-blue-700">
                 <strong>ゲストモード：</strong>
                 アカウント登録なしで一時的にアプリを体験できます。
-                データは24時間保存され、一部機能に制限があります。
+                データは24時間保存され、すべての機能をお試しいただけます。
               </p>
             </div>
 
