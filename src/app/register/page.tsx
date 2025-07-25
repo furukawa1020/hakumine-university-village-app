@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Mountain, Mail, Lock, Eye, EyeOff, ArrowLeft, User } from 'lucide-react';
+import { Mountain, Mail, Lock, Eye, EyeOff, ArrowLeft, User, UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
@@ -25,7 +25,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   
   const router = useRouter();
-  const setUser = useAuthStore((state) => state.setUser);
+  const { setUser, loginAsGuest } = useAuthStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -110,6 +110,19 @@ export default function RegisterPage() {
       } else {
         setError('アカウント作成に失敗しました');
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    try {
+      setLoading(true);
+      await loginAsGuest();
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Guest login error:', error);
+      setError('ゲストモードでのログインに失敗しました');
     } finally {
       setLoading(false);
     }
@@ -244,6 +257,33 @@ export default function RegisterPage() {
                 {loading ? 'アカウント作成中...' : 'アカウントを作成'}
               </Button>
             </form>
+
+            {/* ゲストモードボタン */}
+            <div className="mt-4">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">または</span>
+                </div>
+              </div>
+              
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full mt-4 border-blue-200 text-blue-700 hover:bg-blue-50"
+                onClick={handleGuestLogin}
+                disabled={loading}
+              >
+                <UserIcon className="h-4 w-4 mr-2" />
+                ゲストとして利用
+              </Button>
+              
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                ゲストモードでは24時間の間、一部機能を体験できます
+              </p>
+            </div>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">

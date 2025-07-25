@@ -12,7 +12,11 @@ import {
   Clock,
   Star,
   Plus,
-  Save
+  Save,
+  Image,
+  AlertCircle,
+  CheckCircle,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -34,9 +38,38 @@ export default function CreateQuestPage() {
     difficulty: 'easy',
     category: '地域貢献',
     rewards: [] as string[],
-    requirements: ''
+    requirements: '',
+    tags: [] as string[],
+    isPublic: true,
+    allowWaitlist: true
   });
   const [newReward, setNewReward] = useState('');
+  const [newTag, setNewTag] = useState('');
+  const [questImage, setQuestImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB制限
+        setErrors(prev => ({ ...prev, image: 'ファイルサイズは5MB以下にしてください' }));
+        return;
+      }
+      setQuestImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+      setErrors(prev => ({ ...prev, image: '' }));
+    }
+  };
+
+  const removeImage = () => {
+    setQuestImage(null);
+    setImagePreview(null);
+  };
 
   const categories = ['地域貢献', '文化体験', '自然体験', '福祉支援', '学習・研究', 'その他'];
 
@@ -48,6 +81,69 @@ export default function CreateQuestPage() {
   };
 
   const addReward = () => {
+    if (newReward.trim() && !questData.rewards.includes(newReward.trim())) {
+      setQuestData(prev => ({
+        ...prev,
+        rewards: [...prev.rewards, newReward.trim()]
+      }));
+      setNewReward('');
+    }
+  };
+
+  const removeReward = (index: number) => {
+    setQuestData(prev => ({
+      ...prev,
+      rewards: prev.rewards.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addTag = () => {
+    if (newTag.trim() && !questData.tags.includes(newTag.trim())) {
+      setQuestData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag('');
+    }
+  };
+
+  const removeTag = (index: number) => {
+    setQuestData(prev => ({
+      ...prev,
+      tags: prev.tags.filter((_, i) => i !== index)
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!questData.title.trim()) {
+      newErrors.title = 'クエストタイトルは必須です';
+    }
+
+    if (!questData.description.trim()) {
+      newErrors.description = 'クエストの説明は必須です';
+    }
+
+    if (!questData.startDate) {
+      newErrors.startDate = '開始日は必須です';
+    }
+
+    if (!questData.startTime) {
+      newErrors.startTime = '開始時刻は必須です';
+    }
+
+    if (!questData.location.trim()) {
+      newErrors.location = '場所は必須です';
+    }
+
+    if (!questData.capacity || parseInt(questData.capacity) < 1) {
+      newErrors.capacity = '有効な参加人数を入力してください';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
     if (newReward.trim()) {
       setQuestData(prev => ({
         ...prev,

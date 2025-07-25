@@ -19,7 +19,10 @@ import {
   VolumeX,
   Plus,
   Search,
-  Smile
+  Smile,
+  Image,
+  Paperclip,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
@@ -117,7 +120,49 @@ export default function ChatPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [isInCall, setIsInCall] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 絵文字リスト
+  const emojis = [
+    '😊', '😂', '🤣', '😍', '🥰', '😘', '😋', '😎', '🤔', '😅',
+    '😭', '😢', '😤', '😡', '🥺', '😴', '🤯', '🤪', '😜', '😉',
+    '👍', '👎', '👌', '✌️', '🤝', '👏', '🙏', '💪', '🔥', '⭐',
+    '❤️', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💕', '💖',
+    '🎉', '🎊', '🎈', '🎁', '🏆', '🌟', '✨', '💫', '🌈', '☀️'
+  ];
+
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB制限
+        alert('ファイルサイズは5MB以下にしてください');
+        return;
+      }
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const addEmoji = (emoji: string) => {
+    setNewMessage(prev => prev + emoji);
+    setShowEmojiPicker(false);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -128,19 +173,31 @@ export default function ChatPage() {
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() && !selectedImage) return;
+
+    let messageContent = newMessage;
+    let messageType: 'text' | 'image' = 'text';
+
+    // 画像付きメッセージの場合
+    if (selectedImage) {
+      messageType = 'image';
+      // 実際の実装では画像をFirebase Storageにアップロード
+      messageContent = imagePreview || '画像を送信しました';
+    }
 
     const message = {
       id: Date.now().toString(),
       userId: 'current',
       userName: user?.displayName || 'あなた',
-      content: newMessage,
+      content: messageContent,
       timestamp: new Date(),
-      type: 'text' as const
+      type: messageType,
+      imageUrl: selectedImage ? imagePreview : undefined
     };
 
     setMessages([...messages, message]);
     setNewMessage('');
+    removeImage();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -353,15 +410,68 @@ export default function ChatPage() {
 
           {/* メッセージ入力エリア */}
           <div className="border-t border-gray-200 bg-white/80 backdrop-blur-sm p-4">
+            {/* 画像プレビュー */}
+            {imagePreview && (
+              <div className="mb-3 relative inline-block">
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  className="max-w-xs max-h-40 rounded-lg border"
+                />
+                <button
+                  onClick={removeImage}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+
             <div className="flex items-end gap-2">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <Button size="sm" variant="ghost">
-                    <Smile className="h-4 w-4" />
+                  <div className="relative">
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                    >
+                      <Smile className="h-4 w-4" />
+                    </Button>
+                    
+                    {/* 絵文字ピッカー */}
+                    {showEmojiPicker && (
+                      <div className="absolute bottom-full mb-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50">
+                        <div className="grid grid-cols-8 gap-1 max-w-xs">
+                          {emojis.map((emoji, index) => (
+                            <button
+                              key={index}
+                              onClick={() => addEmoji(emoji)}
+                              className="p-1 hover:bg-gray-100 rounded text-lg"
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    size="sm" 
+                    variant="ghost"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Image className="h-4 w-4" />
                   </Button>
-                  <Button size="sm" variant="ghost">
-                    <Plus className="h-4 w-4" />
-                  </Button>
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
                 </div>
                 <div className="relative">
                   <Input
@@ -374,7 +484,7 @@ export default function ChatPage() {
                   <Button
                     size="sm"
                     onClick={handleSendMessage}
-                    disabled={!newMessage.trim()}
+                    disabled={!newMessage.trim() && !selectedImage}
                     className="absolute right-1 top-1 h-8 w-8 p-0"
                   >
                     <Send className="h-4 w-4" />
