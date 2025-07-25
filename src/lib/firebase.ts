@@ -14,13 +14,31 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-DEMO'
 };
 
-// Firebase初期化
-const app = initializeApp(firebaseConfig);
+// Firebase初期化（エラーハンドリング付き）
+let app;
+let auth;
+let db;
+let storage;
 
-// Services初期化（Node.js 18互換）
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+try {
+  app = initializeApp(firebaseConfig);
+  
+  // Services初期化（Node.js 18互換）
+  auth = getAuth(app);
+  db = getFirestore(app);
+  storage = getStorage(app);
+  
+  console.log('Firebase initialized successfully');
+} catch (error) {
+  console.warn('Firebase initialization failed:', error);
+  // Netlifyビルド時のフォールバック
+  app = null;
+  auth = null;
+  db = null;
+  storage = null;
+}
+
+export { auth, db, storage };
 
 // Messaging（Netlifyビルド互換性のため無効化）
 export const messaging = null;

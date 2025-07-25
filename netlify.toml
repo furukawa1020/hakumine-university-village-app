@@ -1,7 +1,9 @@
 [build]
   publish = "out"
   command = "npm run build:netlify"
-
+  # ビルドタイムアウトを延長
+  functions = "netlify/functions"
+  
 [build.environment]
   # NetlifyでサポートされているNode.jsバージョンを明示的に指定
   NODE_VERSION = "18.19.1"
@@ -15,9 +17,13 @@
   # Environment
   NODE_ENV = "production"
   NEXT_TELEMETRY_DISABLED = "1"
+  # Build debugging
+  DEBUG = "next:*"
+  VERBOSE = "true"
   # Netlify specific
   CI = "true"
   NETLIFY = "true"
+  NETLIFY_BUILD_DEBUG = "true"
   # Firebase環境変数のデフォルト値
   NEXT_PUBLIC_FIREBASE_API_KEY = "demo-api-key"
   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "demo.firebaseapp.com"
