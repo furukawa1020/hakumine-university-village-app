@@ -8,8 +8,8 @@
 // });
 
 const nextConfig = {
-  // Netlify対応設定
-  output: 'export',
+  // Netlify対応設定（一時的に静的エクスポートを無効化）
+  // output: 'export',
   trailingSlash: true,
   images: {
     unoptimized: true

@@ -60,6 +60,12 @@ export default function MapPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // ブラウザ環境でのみ位置情報を取得
+    if (typeof window === 'undefined') {
+      setIsLoading(false);
+      return;
+    }
+    
     // 位置情報の取得
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -94,6 +100,8 @@ export default function MapPage() {
   };
 
   const requestLocationPermission = () => {
+    if (typeof window === 'undefined') return;
+    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {

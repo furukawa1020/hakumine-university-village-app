@@ -22,6 +22,7 @@ let firebaseStorage: FirebaseStorage | null = null;
 
 // Firebase初期化関数（遅延初期化）
 function initializeFirebase() {
+  // サーバーサイドでは初期化しない
   if (typeof window === 'undefined') return null;
   
   try {
@@ -31,7 +32,8 @@ function initializeFirebase() {
     } else {
       // 設定値チェック
       if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-        throw new Error('Firebase configuration is incomplete');
+        console.warn('Firebase configuration is incomplete');
+        return null;
       }
       firebaseApp = initializeApp(firebaseConfig);
     }
@@ -51,22 +53,55 @@ function initializeFirebase() {
 }
 
 // Getter関数（使用時に初期化）
-export function getFirebaseAuth(): Auth | null {
-  if (!firebaseAuth) initializeFirebase();
-  return firebaseAuth;
+export function getFirebaseAuth(): Auth {
+  // サーバーサイドまたはデモモードの場合はダミーオブジェクトを返す
+  if (typeof window === 'undefined' || process.env.NEXT_PUBLIC_FIREBASE_API_KEY === 'demo-api-key') {
+    return {} as Auth;
+  }
+  
+  if (!firebaseAuth) {
+    const initialized = initializeFirebase();
+    if (!initialized?.auth) {
+      console.warn('Firebase Auth could not be initialized');
+      return {} as Auth;
+    }
+  }
+  return firebaseAuth!;
 }
 
-export function getFirebaseDB(): Firestore | null {
-  if (!firebaseDB) initializeFirebase();
-  return firebaseDB;
+export function getFirebaseDB(): Firestore {
+  // サーバーサイドまたはデモモードの場合はダミーオブジェクトを返す
+  if (typeof window === 'undefined' || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID === 'demo-project') {
+    return {} as Firestore;
+  }
+  
+  if (!firebaseDB) {
+    const initialized = initializeFirebase();
+    if (!initialized?.db) {
+      console.warn('Firebase Firestore could not be initialized');
+      return {} as Firestore;
+    }
+  }
+  return firebaseDB!;
 }
 
-export function getFirebaseStorage(): FirebaseStorage | null {
-  if (!firebaseStorage) initializeFirebase();
-  return firebaseStorage;
+export function getFirebaseStorage(): FirebaseStorage {
+  // サーバーサイドまたはデモモードの場合はダミーオブジェクトを返す
+  if (typeof window === 'undefined' || process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET === 'demo.appspot.com') {
+    return {} as FirebaseStorage;
+  }
+  
+  if (!firebaseStorage) {
+    const initialized = initializeFirebase();
+    if (!initialized?.storage) {
+      console.warn('Firebase Storage could not be initialized');
+      return {} as FirebaseStorage;
+    }
+  }
+  return firebaseStorage!;
 }
 
-// 後方互換性のため（既存コードで使用されている場合）
+// 後方互換性のため（既存コードで使用されている場合）  
 export const auth = getFirebaseAuth();
 export const db = getFirebaseDB();
 export const storage = getFirebaseStorage();
