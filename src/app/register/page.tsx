@@ -256,7 +256,7 @@ export default function RegisterPage() {
 
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <p className="text-xs text-blue-800">
-                <strong>学生専用サービス:</strong> このアプリは白峰大学村参加学生専用のクローズドコミュニティです。
+                <strong>白峰大学村アプリ:</strong> このアプリは白峰大学村での体験を共有するコミュニティアプリです。
                 メールアドレス認証で安心してご利用いただけます。
               </p>
             </div>

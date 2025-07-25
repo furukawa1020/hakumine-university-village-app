@@ -33,7 +33,7 @@ export default function Home() {
             <div className="mb-6">
               <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
                 <Sparkles className="h-4 w-4" />
-                学生専用PWAアプリ
+                コミュニティアプリ
               </div>
             </div>
             <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
@@ -41,7 +41,7 @@ export default function Home() {
               <span className="text-blue-600 block">白峰大学村アプリ</span>
             </h2>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
-              白峰大学村での滞在・活動・交流を「ゆるく・楽しく・可視化」できる学生専用コミュニティ。
+              白峰大学村での滞在・活動・交流を「ゆるく・楽しく・可視化」できるコミュニティアプリ。
               <br />
               ドット風アバターで白峰の自然を舞台に、新しい学びの体験を始めよう。
             </p>
@@ -195,7 +195,7 @@ export default function Home() {
                 </div>
                 <h4 className="font-semibold text-gray-800 mb-2">プライバシー保護</h4>
                 <p className="text-sm text-gray-600">
-                  学生専用クローズドコミュニティで安心して利用可能
+                  プライバシー設定により安心して利用可能
                 </p>
               </div>
             </div>
@@ -210,11 +210,11 @@ export default function Home() {
                 白峰での学びを始めよう
               </h3>
               <p className="text-lg mb-6 opacity-90">
-                学生専用のクローズドコミュニティで安心して交流できます
+                白峰大学村での体験を共有し、交流を深めましょう
               </p>
               <Link href="/register">
                 <Button size="lg" variant="secondary" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4">
-                  大学メールでサインアップ
+                  メールでサインアップ
                 </Button>
               </Link>
             </div>
