@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:netlify": "npm install --no-audit --no-fund && npm run build || (echo 'Build failed' && exit 1)",
+    "prebuild": "node -e \"const fs = require('fs'); const path = '.next/cache'; if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });\"",
     "build:verbose": "next build --debug",
     "build:debug": "npm install && npm run build --verbose",
     "start": "next start",

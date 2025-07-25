@@ -16,6 +16,8 @@
 # next.js
 /.next/
 /out/
+# Netlifyでキャッシュを使用するため、一部は除外しない
+!/.next/cache/
 
 # production
 /build

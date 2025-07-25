@@ -4,14 +4,17 @@
   # ビルドタイムアウトを延長
   functions = "netlify/functions"
   
+# Netlify キャッシュ設定
 [build.environment]
   # NetlifyでサポートされているNode.jsバージョンを明示的に指定
   NODE_VERSION = "18.19.1"
   NPM_VERSION = "10.2.4"
-  # Next.js build cache
+  # Next.js build cache (Netlify対応)
   NEXT_CACHE = "true"
+  NETLIFY_CACHE_ID = "next-build-cache"
   # NPM cache configuration
   NPM_CONFIG_CACHE = ".npm"
+  NPM_CONFIG_PREFER_OFFLINE = "true"
   # Node.js memory settings
   NODE_OPTIONS = "--max-old-space-size=4096"
   # Environment
@@ -44,6 +47,10 @@
   bundle = true
   minify = true
 
+# Netlify キャッシュとリダイレクト設定
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -51,6 +58,7 @@
 
 [context.production.environment]
   NEXT_PUBLIC_NODE_ENV = "production"
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
 [context.deploy-preview.environment]
   NEXT_PUBLIC_NODE_ENV = "development"

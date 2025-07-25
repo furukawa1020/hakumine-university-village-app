@@ -12,6 +12,10 @@ const nextConfig = {
     return 'netlify-build-' + Date.now()
   },
 
+  // ビルドキャッシュ設定（Netlify対応）
+  // cacheHandler: process.env.NETLIFY ? undefined : require.resolve('./cache-handler.js'),
+  cacheMaxMemorySize: 0, // デフォルトの50MBを無効化してディスクキャッシュを使用
+
   // Firebase設定（静的ビルド対応）
   env: {
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'demo-key',
