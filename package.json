@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:netlify": "npm run build:safe",
+    "build:netlify": "npm run build:clean && npm run build:verbose",
     "build:verbose": "next build --debug",
     "build:debug": "npm install && npm run build --verbose",
-    "build:safe": "rimraf .next out && next build",
+    "build:safe": "npm run build:clean && next build",
+    "build:clean": "node -e \"const fs = require('fs'); try { fs.rmSync('.next', {recursive: true, force: true}); console.log('Cleaned .next directory'); } catch(e) { console.log('.next not found, skipping'); } try { fs.rmSync('out', {recursive: true, force: true}); console.log('Cleaned out directory'); } catch(e) { console.log('out not found, skipping'); }\"",
     "prebuild": "echo 'Starting build process...'",
     "start": "next start",
     "lint": "next lint",
