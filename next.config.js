@@ -55,6 +55,12 @@ const nextConfig = {
 
   // Webpack設定（Netlify対応簡略版）
   webpack: (config, { isServer }) => {
+    // TypeScriptパス解決のエイリアス設定
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+
     // サーバーサイドでの Node.js polyfill を無効化
     if (!isServer) {
       config.resolve.fallback = {
