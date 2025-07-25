@@ -49,11 +49,6 @@ export default function RegisterPage() {
         throw new Error('パスワードは6文字以上で入力してください');
       }
 
-      // 大学メールドメインチェック
-      if (!formData.email.endsWith('@university.edu') && !formData.email.endsWith('@student.university.edu')) {
-        throw new Error('大学のメールアドレスを使用してください');
-      }
-
       // ユーザー作成
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const user = userCredential.user;
@@ -140,7 +135,7 @@ export default function RegisterPage() {
           <CardHeader>
             <CardTitle className="text-center">新規登録</CardTitle>
             <CardDescription className="text-center">
-              大学のメールアドレスでアカウントを作成してください
+              メールアドレスでアカウントを作成してください
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -182,14 +177,11 @@ export default function RegisterPage() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="your.name@university.edu"
+                    placeholder="your.name@example.com"
                     className="pl-10"
                     required
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  ※大学のメールアドレス（@university.edu または @student.university.edu）のみ使用可能です
-                </p>
               </div>
 
               <div>
@@ -265,7 +257,7 @@ export default function RegisterPage() {
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
               <p className="text-xs text-blue-800">
                 <strong>学生専用サービス:</strong> このアプリは白峰大学村参加学生専用のクローズドコミュニティです。
-                大学のメールアドレスによる認証で安心してご利用いただけます。
+                メールアドレス認証で安心してご利用いただけます。
               </p>
             </div>
           </CardContent>

@@ -1,7 +1,7 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 // Firebase設定（Node.js 18 + Firebase v10対応）
 const firebaseConfig = {
@@ -15,10 +15,10 @@ const firebaseConfig = {
 };
 
 // Firebase初期化（エラーハンドリング付き）
-let app;
-let auth;
-let db;
-let storage;
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
+let db: Firestore | undefined;
+let storage: FirebaseStorage | undefined;
 
 try {
   app = initializeApp(firebaseConfig);
@@ -32,10 +32,10 @@ try {
 } catch (error) {
   console.warn('Firebase initialization failed:', error);
   // Netlifyビルド時のフォールバック
-  app = null;
-  auth = null;
-  db = null;
-  storage = null;
+  app = undefined;
+  auth = undefined;
+  db = undefined;
+  storage = undefined;
 }
 
 export { auth, db, storage };

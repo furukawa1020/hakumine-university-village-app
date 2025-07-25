@@ -27,11 +27,6 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // 大学メールドメインチェック
-      if (!email.endsWith('@university.edu') && !email.endsWith('@student.university.edu')) {
-        throw new Error('大学のメールアドレスを使用してください');
-      }
-
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       
@@ -98,7 +93,7 @@ export default function LoginPage() {
           <CardHeader>
             <CardTitle className="text-center">ログイン</CardTitle>
             <CardDescription className="text-center">
-              大学のメールアドレスでログインしてください
+              メールアドレスでログインしてください
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -120,7 +115,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your.name@university.edu"
+                    placeholder="your.name@example.com"
                     className="pl-10"
                     required
                   />

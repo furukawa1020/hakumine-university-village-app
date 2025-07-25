@@ -37,7 +37,7 @@ export default function Home() {
             </div>
             <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
               学びと交流の
-              <span className="text-blue-600 block">デジタル村</span>
+              <span className="text-blue-600 block">白峰大学村アプリ</span>
             </h2>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto">
               白峰大学村での滞在・活動・交流を「ゆるく・楽しく・可視化」できる学生専用コミュニティ。
@@ -50,15 +50,17 @@ export default function Home() {
                   アプリを始める
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-4">
-                詳しく見る
-              </Button>
+              <Link href="#features">
+                <Button variant="outline" size="lg" className="text-lg px-8 py-4">
+                  詳しく見る
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
 
         {/* 機能紹介 */}
-        <section className="mb-16">
+        <section id="features" className="mb-16">
           <h3 className="text-3xl font-bold text-center text-gray-800 mb-12">
             主な機能
           </h3>
