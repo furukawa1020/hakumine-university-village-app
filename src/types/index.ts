@@ -10,6 +10,21 @@ export interface User {
   location?: Location;
   joinedAt: Date;
   lastActiveAt: Date;
+  isGuest?: boolean; // ゲストユーザーフラグ
+}
+
+// ゲストユーザー情報
+export interface GuestUser {
+  uid: string; // ゲスト用の一意ID
+  displayName: string;
+  avatarConfig: AvatarConfig;
+  settings: UserSettings;
+  status: 'online' | 'offline' | 'away';
+  location?: Location;
+  joinedAt: Date;
+  lastActiveAt: Date;
+  isGuest: true;
+  sessionId: string; // セッション管理用
 }
 
 // アバター設定

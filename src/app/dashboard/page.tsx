@@ -111,7 +111,14 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2">
               <AvatarPreview />
               <div className="hidden sm:block">
-                <p className="text-sm font-medium text-gray-800">{user.displayName}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-gray-800">{user.displayName}</p>
+                  {user.isGuest && (
+                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                      ゲスト
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-gray-500">{user.status}</p>
               </div>
             </div>
@@ -165,6 +172,28 @@ export default function DashboardPage() {
 
         {/* メインコンテンツ */}
         <main className="flex-1 p-4 lg:p-6">
+          {/* ゲストモード警告バナー */}
+          {user.isGuest && (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 text-yellow-600 mt-0.5">⚠️</div>
+                <div className="flex-1">
+                  <h3 className="font-medium text-yellow-800 mb-1">ゲストモードでご利用中</h3>
+                  <p className="text-sm text-yellow-700 mb-2">
+                    データは24時間保存され、チャット機能などは制限されています。
+                    完全な機能をご利用いただくには、アカウント登録をお勧めします。
+                  </p>
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center text-sm font-medium text-yellow-800 hover:text-yellow-900 underline"
+                  >
+                    アカウント登録へ →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* ウェルカムセクション */}
           <div className="mb-8">
             <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-2xl p-6 relative overflow-hidden">
