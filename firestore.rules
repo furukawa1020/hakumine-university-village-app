@@ -1,45 +1,94 @@
-// Firestore セキュリティルール（開発用）
-// 本番環境では適切なセキュリティルールに変更してください
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ユーザー情報（本人のみ読み書き可能）
+    // ユーザー情報：本人のみ書き込み可、認証ユーザーは読み取り可
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // クエスト（全員読み取り可、運営のみ書き込み可）
+    // クエスト：認証ユーザーは読み取り可、運営のみ作成・更新可
     match /quests/{questId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow create, update: if request.auth != null && isAdmin();
+      allow delete: if false; // 削除は禁止
     }
     
-    // クエスト参加情報
-    match /quest_participants/{participantId} {
+    // クエスト参加：本人のみ管理可
+    match /questParticipants/{participantId} {
       allow read: if request.auth != null;
       allow write: if request.auth != null && 
-        request.auth.uid == resource.data.userId;
+        (resource == null || resource.data.userId == request.auth.uid);
     }
     
-    // 日記（投稿者本人と公開設定による制御）
-    match /logs/{logId} {
+    // チャットルーム：メンバーのみアクセス可
+    match /chatRooms/{roomId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid in resource.data.members;
+    }
+    
+    // メッセージ：チャットルームメンバーのみ
+    match /messages/{messageId} {
+      allow read: if request.auth != null && isRoomMember(resource.data.roomId);
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+      allow update, delete: if false; // メッセージの編集・削除は禁止
+    }
+    
+    // 日記ログ：作者本人 + 公開設定に応じて読み取り
+    match /diaryLogs/{logId} {
       allow read: if request.auth != null && 
         (resource.data.userId == request.auth.uid || 
-         resource.data.visibility == 'public');
+         resource.data.visibility == 'public' ||
+         (resource.data.visibility == 'limited' && isLimitedAccess()));
       allow write: if request.auth != null && 
-        request.auth.uid == resource.data.userId;
+        (resource == null || resource.data.userId == request.auth.uid);
     }
     
-    // チャットメッセージ（認証済みユーザーのみ）
-    match /messages/{messageId} {
-      allow read, write: if request.auth != null;
+    // ユーザー位置：本人のみ書き込み、認証ユーザーは読み取り可
+    match /userPositions/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // その他のコレクション（開発用・緩い設定）
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+    // ヘルパー関数
+    function isAdmin() {
+      // 管理者判定ロジック（実装時に定義）
+      return request.auth != null && 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    function isRoomMember(roomId) {
+      return request.auth != null && 
+        request.auth.uid in get(/databases/$(database)/documents/chatRooms/$(roomId)).data.members;
+    }
+    
+    function isLimitedAccess() {
+      // 限定公開のアクセス権判定（実装時に定義）
+      return true; // 暫定的に全許可
+    }
+  }
+}
+
+// Storage Rules
+service firebase.storage {
+  match /b/{bucket}/o {
+    // ユーザープロフィール画像：本人のみアップロード可
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // 日記画像：作者のみアップロード可
+    match /diary/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // クエスト画像：運営のみアップロード可
+    match /quests/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null; // 暫定的に認証ユーザー全許可
     }
   }
 }
