@@ -33,6 +33,10 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // Netlify専用最適化
+  poweredByHeader: false,
+  reactStrictMode: false, // Netlifyビルドでの互換性向上
+
   // ビルド最適化設定
   experimental: {
     esmExternals: true,

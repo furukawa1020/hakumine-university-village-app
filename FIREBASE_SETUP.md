@@ -5,8 +5,10 @@
 
 ## 技術仕様
 - **Firebase SDK**: v10.14.0 (Node.js 18対応)  
-- **Node.js**: 18.19.1 (Netlify推奨LTSバージョン)
+- **Node.js**: 18 (Netlify推奨LTSバージョン)
 - **Next.js**: 15.4.4 (静的エクスポート対応)
+- **TailwindCSS**: v3.4.14 (安定版)
+- **PostCSS**: 標準設定（autoprefixer + tailwindcss）
 
 ## 本番用 Firebase プロジェクト設定手順
 
