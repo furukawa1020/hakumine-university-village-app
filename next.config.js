@@ -41,62 +41,23 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: false, // Netlifyビルドでの互換性向上
 
-  // ビルド最適化設定
+  // ビルド最適化設定（基本設定のみ）
   experimental: {
-    esmExternals: true,
     forceSwcTransforms: true,
   },
 
-  // メモリ制限とパフォーマンス
-  onDemandEntries: {
-    maxInactiveAge: 25 * 1000,
-    pagesBufferLength: 2,
-  },
+  // 本番環境でのコンソール削除（Netlify対応）
+  compiler: process.env.NODE_ENV === 'production' ? {
+    removeConsole: {
+      exclude: ['error', 'warn']
+    },
+  } : {},
 
-  // 本番環境でのコンソール削除
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? {
-      exclude: ['error']
-    } : false,
-  },
-
-  // Webpack設定
+  // Webpack設定（Netlify対応簡略版）
   webpack: (config, { isServer }) => {
-    // バンドルサイズ最適化
-    config.optimization = {
-      ...config.optimization,
-      splitChunks: {
-        chunks: 'all',
-        minSize: 20000,
-        maxSize: 244000,
-        cacheGroups: {
-          default: {
-            minChunks: 1,
-            priority: -20,
-            reuseExistingChunk: true,
-          },
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: -10,
-            chunks: 'all',
-            maxSize: 244000,
-          },
-          firebase: {
-            test: /[\\/]node_modules[\\/]firebase/,
-            name: 'firebase',
-            priority: 10,
-            chunks: 'all',
-            maxSize: 244000,
-          },
-        },
-      },
-    }
-
-    // Firebase関連の外部化とポリフィル
+    // サーバーサイドでの Node.js polyfill を無効化
     if (!isServer) {
       config.resolve.fallback = {
-        ...config.resolve.fallback,
         fs: false,
         net: false,
         tls: false,
