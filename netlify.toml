@@ -9,6 +9,11 @@
   NEXT_CACHE = "true"
   # NPM cache configuration
   NPM_CONFIG_CACHE = ".npm"
+  # Node.js memory settings
+  NODE_OPTIONS = "--max-old-space-size=4096"
+  # Environment
+  NODE_ENV = "production"
+  NEXT_TELEMETRY_DISABLED = "1"
 
 # Build cache configuration
 [build.processing]
