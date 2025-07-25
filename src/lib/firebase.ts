@@ -1,7 +1,7 @@
-import { initializeApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
-import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 // Firebase設定（Node.js 18 + Firebase v10対応）
 const firebaseConfig = {
@@ -14,11 +14,19 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-DEMO'
 };
 
+// デバッグ用：環境変数の確認
+console.log('Firebase Config Debug:', {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? 'Set' : 'Not Set',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? 'Set' : 'Not Set',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? 'Set' : 'Not Set',
+  actualApiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.substring(0, 10) + '...'
+});
+
 // Firebase初期化（エラーハンドリング付き）
-let app: FirebaseApp | undefined;
-let auth: Auth | undefined;
-let db: Firestore | undefined;
-let storage: FirebaseStorage | undefined;
+let app;
+let auth;
+let db;
+let storage;
 
 try {
   app = initializeApp(firebaseConfig);
@@ -32,10 +40,10 @@ try {
 } catch (error) {
   console.warn('Firebase initialization failed:', error);
   // Netlifyビルド時のフォールバック
-  app = undefined;
-  auth = undefined;
-  db = undefined;
-  storage = undefined;
+  app = null;
+  auth = null;
+  db = null;
+  storage = null;
 }
 
 export { auth, db, storage };
