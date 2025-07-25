@@ -4,22 +4,22 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 // Firebase設定（Node.js 18 + Firebase v10対応）
-// 一時的にハードコード（テスト用）
+// 一時的にテスト用のプロジェクト設定（動作確認用）
 const firebaseConfig = {
-  apiKey: "AIzaSyAEq7IxIneu-SA6-d-xdCZC2OU8cArJr84",
-  authDomain: "hakumine-university-village.firebaseapp.com",
-  projectId: "hakumine-university-village",
-  storageBucket: "hakumine-university-village.firebasestorage.app",
-  messagingSenderId: "710646321611",
-  appId: "1:710646321611:web:e3e1d018fe07504da1664e",
-  measurementId: "G-GJYCPZV15W"
+  apiKey: "AIzaSyDOCAbC123dEf456GhI789jKl012-MnO34", // テスト用
+  authDomain: "demo-project-12345.firebaseapp.com", // テスト用
+  projectId: "demo-project-12345", // テスト用
+  storageBucket: "demo-project-12345.appspot.com", // テスト用
+  messagingSenderId: "123456789012", // テスト用
+  appId: "1:123456789012:web:0123456789abcdef", // テスト用
+  measurementId: "G-DEMO123456" // テスト用
 };
 
 // デバッグ用：値の確認
-console.log('Firebase Config Debug (Hardcoded Test):', {
+console.log('Firebase Config Debug (Test Project):', {
   apiKey: firebaseConfig.apiKey.substring(0, 10) + '...',
-  appId: firebaseConfig.appId.substring(0, 30) + '...',
-  measurementId: firebaseConfig.measurementId
+  projectId: firebaseConfig.projectId,
+  authDomain: firebaseConfig.authDomain
 });
 
 // Firebase初期化（エラーハンドリング付き）
