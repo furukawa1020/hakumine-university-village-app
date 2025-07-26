@@ -11,7 +11,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function PrivacySettingsPage() {
   const router = useRouter();
-  const { user, setUser, isGuest } = useAuthStore();
+  const { user, setUser, isGuest, isLoading } = useAuthStore();
   const [settings, setSettings] = useState({
     showLocation: true,
     locationPrecision: 'area' as 'exact' | 'area' | 'disabled',
@@ -23,6 +23,9 @@ export default function PrivacySettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    // ローディング中は何もしない
+    if (isLoading) return;
+    
     if (!user) {
       router.push('/login');
       return;
@@ -31,7 +34,7 @@ export default function PrivacySettingsPage() {
     if (user.settings?.privacy) {
       setSettings(user.settings.privacy);
     }
-  }, [user, router]);
+  }, [user, router, isLoading]);
 
   const handleSettingChange = (key: string, value: any) => {
     setSettings(prev => ({
@@ -73,7 +76,7 @@ export default function PrivacySettingsPage() {
     }
   };
 
-  if (!user) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
         <div className="text-center">

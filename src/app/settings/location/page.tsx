@@ -11,7 +11,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function LocationSettingsPage() {
   const router = useRouter();
-  const { user, setUser, isGuest } = useAuthStore();
+  const { user, setUser, isGuest, isLoading } = useAuthStore();
   const [settings, setSettings] = useState({
     locationSharing: true,
     locationGranularity: 'rough' as 'exact' | 'rough' | 'off',
@@ -21,6 +21,9 @@ export default function LocationSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    // ローディング中は何もしない
+    if (isLoading) return;
+    
     if (!user) {
       router.push('/login');
       return;
@@ -34,7 +37,7 @@ export default function LocationSettingsPage() {
         locationPrecision: user.settings.privacy.locationPrecision,
       });
     }
-  }, [user, router]);
+  }, [user, router, isLoading]);
 
   const handleSettingChange = (key: string, value: any) => {
     setSettings(prev => ({
@@ -79,7 +82,7 @@ export default function LocationSettingsPage() {
     }
   };
 
-  if (!user) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
         <div className="text-center">

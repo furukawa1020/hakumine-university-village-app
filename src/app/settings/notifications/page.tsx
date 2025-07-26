@@ -11,7 +11,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function NotificationsSettingsPage() {
   const router = useRouter();
-  const { user, setUser, isGuest } = useAuthStore();
+  const { user, setUser, isGuest, isLoading } = useAuthStore();
   const [settings, setSettings] = useState({
     questNotifications: true,
     chatNotifications: true,
@@ -21,6 +21,9 @@ export default function NotificationsSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    // ローディング中は何もしない
+    if (isLoading) return;
+    
     if (!user) {
       router.push('/login');
       return;
@@ -29,7 +32,7 @@ export default function NotificationsSettingsPage() {
     if (user.settings?.notifications) {
       setSettings(user.settings.notifications);
     }
-  }, [user, router]);
+  }, [user, router, isLoading]);
 
   const handleSettingChange = (key: string, value: boolean) => {
     setSettings(prev => ({
@@ -71,7 +74,7 @@ export default function NotificationsSettingsPage() {
     }
   };
 
-  if (!user) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
         <div className="text-center">

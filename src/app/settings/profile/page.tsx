@@ -12,12 +12,15 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function ProfileSettingsPage() {
   const router = useRouter();
-  const { user, setUser, isGuest } = useAuthStore();
+  const { user, setUser, isGuest, isLoading } = useAuthStore();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    // ローディング中は何もしない
+    if (isLoading) return;
+    
     if (!user) {
       router.push('/login');
       return;
@@ -27,7 +30,7 @@ export default function ProfileSettingsPage() {
     if ('email' in user) {
       setEmail(user.email || '');
     }
-  }, [user, router]);
+  }, [user, router, isLoading]);
 
   const handleSave = async () => {
     if (!user) return;
@@ -59,7 +62,7 @@ export default function ProfileSettingsPage() {
     }
   };
 
-  if (!user) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
         <div className="text-center">

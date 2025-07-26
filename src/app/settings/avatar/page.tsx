@@ -11,7 +11,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function AvatarSettingsPage() {
   const router = useRouter();
-  const { user, updateAvatar, isGuest } = useAuthStore();
+  const { user, updateAvatar, isGuest, isLoading } = useAuthStore();
 
   // デフォルトアバター設定
   const [avatarStyle, setAvatarStyle] = useState({
@@ -26,7 +26,8 @@ export default function AvatarSettingsPage() {
 
   const [hasChanges, setHasChanges] = useState(false);
 
-  if (!user) {
+  // ローディング中または認証チェック中はローディング画面を表示
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
         <div className="text-center">
