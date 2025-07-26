@@ -123,6 +123,43 @@ export default function ChatPage() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [showStickers, setShowStickers] = useState(false);
+
+  // スタンプデータ
+  const stickers = [
+    '😀', '😁', '😂', '🤣', '😃', '😄', '😅', '😆', '😉', '😊',
+    '😋', '😎', '😍', '😘', '🥰', '😗', '😙', '😚', '🙂', '🤗',
+    '🤩', '🤔', '🤨', '😐', '😑', '😶', '🙄', '😏', '😣', '😥',
+    '😮', '🤐', '😯', '😪', '😫', '😴', '😌', '😛', '😜', '😝',
+    '🤤', '😒', '😓', '😔', '😕', '🙃', '🤑', '😲', '☹️', '🙁',
+    '😖', '😞', '😟', '😤', '😢', '😭', '😦', '😧', '😨', '😩',
+    '🤯', '😬', '😰', '😱', '🥵', '🥶', '😳', '🤪', '😵', '🥴',
+    '😠', '😡', '🤬', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '😇',
+    '🥳', '🥺', '🤠', '🤡', '🤥', '🤫', '🤭', '🧐', '🤓', '😈',
+    '💀', '👻', '👽', '🤖', '💩', '😺', '😸', '😹', '😻', '😼',
+    '👍', '👎', '👌', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉',
+    '👆', '🖕', '👇', '☝️', '👋', '🤚', '🖐️', '✋', '🖖', '👏',
+    '🙌', '🤲', '🤝', '🙏', '✍️', '💪', '🦾', '🦿', '🦵', '🦶',
+    '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔',
+    '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '☮️',
+    '🔥', '⭐', '🌟', '✨', '💫', '💯', '💢', '💨', '💦', '💤'
+  ];
+
+  const sendSticker = (sticker: string) => {
+    if (!user || !selectedRoom) return;
+
+    const newMessage = {
+      id: Date.now().toString(),
+      userId: user.uid,
+      userName: user.displayName || 'Unknown User',
+      content: sticker,
+      timestamp: new Date(),
+      type: 'sticker'
+    };
+
+    setMessages(prev => [...prev, newMessage]);
+    setShowStickers(false);
+  };
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -511,9 +548,37 @@ export default function ChatPage() {
                             <button
                               key={index}
                               onClick={() => addEmoji(emoji)}
-                              className="p-1 hover:bg-gray-100 rounded text-lg"
+                              className="w-8 h-8 text-lg hover:bg-gray-100 rounded transition-colors"
                             >
                               {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="relative">
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={() => setShowStickers(!showStickers)}
+                    >
+                      <span className="text-lg">🏷️</span>
+                    </Button>
+                    
+                    {/* スタンプピッカー */}
+                    {showStickers && (
+                      <div className="absolute bottom-full mb-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50">
+                        <div className="text-xs text-gray-500 mb-2">スタンプを選択</div>
+                        <div className="grid grid-cols-10 gap-1 max-w-sm max-h-40 overflow-y-auto">
+                          {stickers.map((sticker, index) => (
+                            <button
+                              key={index}
+                              onClick={() => sendSticker(sticker)}
+                              className="w-8 h-8 text-lg hover:bg-gray-100 rounded transition-colors"
+                            >
+                              {sticker}
                             </button>
                           ))}
                         </div>

@@ -210,13 +210,16 @@ export const useQuestStore = create<QuestStore>((set, get) => ({
         joinedAt: new Date()
       };
 
-      // TODO: Firestoreを更新
-      // const questRef = doc(db, 'quests', questId);
-      // await updateDoc(questRef, {
-      //   participants: increment(1),
-      //   participantsList: arrayUnion(newParticipant),
-      //   updatedAt: new Date()
-      // });
+      // Firestoreを更新
+      try {
+        const questRef = doc(db, 'quests', questId);
+        await updateDoc(questRef, {
+          participantsList: arrayUnion(newParticipant),
+          updatedAt: new Date()
+        });
+      } catch (dbError) {
+        console.warn('Firestore update failed, updating locally only:', dbError);
+      }
 
       // ローカル状態を更新
       const { quests } = get();
@@ -247,29 +250,38 @@ export const useQuestStore = create<QuestStore>((set, get) => ({
   cancelParticipation: async (questId: string, userId: string) => {
     set({ loading: true, error: null });
     try {
-      // TODO: Firestoreを更新
-      // const questRef = doc(db, 'quests', questId);
-      // const questDoc = await getDoc(questRef);
-      // if (questDoc.exists()) {
-      //   const participantToRemove = questDoc.data().participantsList.find(p => p.id === userId);
-      //   await updateDoc(questRef, {
-      //     participants: increment(-1),
-      //     participantsList: arrayRemove(participantToRemove),
-      //     updatedAt: new Date()
-      //   });
-      // }
+      // Firestoreを更新
+      try {
+        const questRef = doc(db, 'quests', questId);
+        const questDoc = await getDoc(questRef);
+        
+        if (questDoc.exists()) {
+          const questData = questDoc.data();
+          const participantToRemove = questData.participantsList?.find((p: QuestParticipant) => p.id === userId);
+          
+          if (participantToRemove) {
+            await updateDoc(questRef, {
+              participantsList: arrayRemove(participantToRemove),
+              updatedAt: new Date()
+            });
+          }
+        }
+      } catch (dbError) {
+        console.warn('Firestore update failed, updating locally only:', dbError);
+      }
 
       // ローカル状態を更新
       const { quests } = get();
       const updatedQuests = quests.map(quest => {
         if (quest.id === questId) {
-          const newParticipants = Math.max(0, quest.participants - 1);
+          const newParticipantsList = quest.participantsList.filter(p => p.id !== userId);
+          const newParticipants = newParticipantsList.length;
           const newStatus = quest.status === 'full' && newParticipants < quest.capacity ? 'open' : quest.status;
           
           return {
             ...quest,
             participants: newParticipants,
-            participantsList: quest.participantsList.filter(p => p.id !== userId),
+            participantsList: newParticipantsList,
             status: newStatus as 'open' | 'full' | 'closed',
             updatedAt: new Date()
           };
