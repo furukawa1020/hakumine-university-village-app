@@ -20,6 +20,7 @@ interface AuthState {
   setUser: (user: User | GuestUser | null) => void;
   setLoading: (isLoading: boolean) => void;
   updateUserSettings: (settings: Partial<UserSettings>) => void;
+  updateAvatar: (avatarConfig: any) => void; // ゲスト用アバター更新
   logout: () => void;
   loginAsGuest: (displayName?: string) => void;
   loadGuestUser: () => void;
@@ -45,11 +46,32 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading }),
 
       updateUserSettings: (settings) => 
-        set((state) => ({
-          user: state.user 
+        set((state) => {
+          const updatedUser = state.user 
             ? { ...state.user, settings: { ...state.user.settings, ...settings } }
-            : null
-        })),
+            : null;
+          
+          // ゲストユーザーの場合はローカルストレージも更新
+          if (updatedUser && updatedUser.isGuest) {
+            saveGuestUser(updatedUser as GuestUser);
+          }
+          
+          return { user: updatedUser };
+        }),
+
+      updateAvatar: (avatarConfig) =>
+        set((state) => {
+          const updatedUser = state.user 
+            ? { ...state.user, avatarConfig }
+            : null;
+          
+          // ゲストユーザーの場合はローカルストレージも更新
+          if (updatedUser && updatedUser.isGuest) {
+            saveGuestUser(updatedUser as GuestUser);
+          }
+          
+          return { user: updatedUser };
+        }),
 
       logout: () => {
         const state = get();

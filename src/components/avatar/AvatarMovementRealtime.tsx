@@ -20,15 +20,39 @@ interface UserAvatar {
 }
 
 export default function AvatarMovement() {
-  const { user } = useAuthStore();
+  const { user, isGuest } = useAuthStore();
   const [position, setPosition] = useState<Position>({ x: 50, y: 50 });
   const [isMoving, setIsMoving] = useState(false);
   const [direction, setDirection] = useState('down');
   const [otherUsers, setOtherUsers] = useState<UserAvatar[]>([]);
+  const [userAvatar, setUserAvatar] = useState<any>(null);
+
+  // ユーザーのアバター設定を取得
+  useEffect(() => {
+    if (!user) return;
+    
+    if (isGuest) {
+      // ゲストユーザーの場合、localStorageからアバター設定を取得
+      const guestData = localStorage.getItem('guest_user');
+      if (guestData) {
+        const guest = JSON.parse(guestData);
+        setUserAvatar(guest.avatarConfig || null);
+      }
+    } else {
+      // 通常ユーザーの場合はuser.avatarConfigを使用
+      setUserAvatar(user.avatarConfig || null);
+    }
+  }, [user, isGuest]);
 
   // Firebase同期：自分の位置を初期化
   useEffect(() => {
     if (!user) return;
+    
+    // ゲストユーザーの場合はFirebase同期をスキップ
+    if (isGuest) {
+      console.log('ゲストユーザーのため、Firebase同期をスキップします');
+      return;
+    }
 
     const initializeUserPosition = async () => {
       try {
@@ -47,11 +71,11 @@ export default function AvatarMovement() {
     };
 
     initializeUserPosition();
-  }, [user]);
+  }, [user, isGuest]);
 
   // Firebase同期：自分の位置を更新
   const updateUserPosition = async (newPosition: Position, newDirection: string, moving: boolean) => {
-    if (!user) return;
+    if (!user || isGuest) return; // ゲストユーザーの場合はFirebase更新をスキップ
 
     try {
       const userRef = doc(db, 'userPositions', user.uid);
@@ -71,6 +95,12 @@ export default function AvatarMovement() {
   // 他のユーザーの位置を監視
   useEffect(() => {
     if (!user) return;
+    
+    // ゲストユーザーの場合はFirebase監視をスキップ
+    if (isGuest) {
+      console.log('ゲストユーザーのため、他ユーザー監視をスキップします');
+      return;
+    }
 
     const unsubscribe = onSnapshot(collection(db, 'userPositions'), (snapshot) => {
       const users: UserAvatar[] = [];
@@ -91,7 +121,7 @@ export default function AvatarMovement() {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [user, isGuest]);
 
   // キーボード移動処理
   useEffect(() => {

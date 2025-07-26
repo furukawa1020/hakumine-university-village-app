@@ -11,7 +11,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function AvatarSettingsPage() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, updateAvatar } = useAuthStore();
 
   // デフォルトアバター設定
   const [avatarStyle, setAvatarStyle] = useState({
@@ -92,11 +92,27 @@ export default function AvatarSettingsPage() {
     setHasChanges(true);
   };
 
-  const handleSave = () => {
-    // TODO: アバター設定をFirebaseに保存
-    console.log('Saving avatar style:', avatarStyle);
-    setHasChanges(false);
-    // 成功メッセージ等を表示
+  const handleSave = async () => {
+    try {
+      const avatarConfig = {
+        skinColor: avatarStyle.skinColor,
+        hairStyle: avatarStyle.hairStyle,
+        hairColor: avatarStyle.hairColor,
+        clothing: avatarStyle.clothing,
+        accessory: avatarStyle.accessory,
+        face: avatarStyle.face,
+        background: avatarStyle.background,
+      };
+      
+      // AuthStoreのupdateAvatar関数を使用（ゲストユーザーにも対応） 
+      await updateAvatar(avatarConfig);
+      
+      setHasChanges(false);
+      alert('アバターを保存しました！');
+    } catch (error) {
+      console.error('アバター保存エラー:', error);
+      alert('アバターの保存に失敗しました。');
+    }
   };
 
   const handleReset = () => {
