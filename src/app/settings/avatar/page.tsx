@@ -4,14 +4,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PixelAvatar } from '@/components/avatar/PixelAvatar';
-import { ArrowLeft, Palette, Save, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Palette, Save, RotateCcw, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function AvatarSettingsPage() {
   const router = useRouter();
-  const { user, updateAvatar } = useAuthStore();
+  const { user, updateAvatar, isGuest } = useAuthStore();
 
   // デフォルトアバター設定
   const [avatarStyle, setAvatarStyle] = useState({
@@ -27,8 +27,14 @@ export default function AvatarSettingsPage() {
   const [hasChanges, setHasChanges] = useState(false);
 
   if (!user) {
-    router.push('/login');
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    );
   }
 
   // カスタマイズオプション
@@ -153,6 +159,24 @@ export default function AvatarSettingsPage() {
       </header>
 
       <div className="p-4 lg:p-6 max-w-4xl mx-auto">
+        {isGuest && (
+          <Card className="mb-6 border-orange-200 bg-orange-50">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-orange-800">ゲストモードでご利用中</p>
+                  <p className="text-orange-700">
+                    アバター設定は24時間保存されます。長期保存には
+                    <Link href="/register" className="underline font-medium mx-1">アカウント登録</Link>
+                    をおすすめします。
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
         <div className="grid lg:grid-cols-3 gap-6">
           {/* アバタープレビュー */}
           <Card className="lg:col-span-1">
