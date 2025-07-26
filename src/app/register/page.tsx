@@ -27,6 +27,9 @@ export default function RegisterPage() {
   const router = useRouter();
   const { setUser, loginAsGuest } = useAuthStore();
 
+  // デバッグ用ログ
+  console.log('RegisterPage rendered, loginAsGuest available:', !!loginAsGuest);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
@@ -272,12 +275,12 @@ export default function RegisterPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full mt-4 border-blue-200 text-blue-700 hover:bg-blue-50"
+                className="w-full mt-4 border-2 border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 font-medium"
                 onClick={handleGuestLogin}
                 disabled={loading}
               >
-                <UserIcon className="h-4 w-4 mr-2" />
-                ゲストとして利用
+                <UserIcon className="h-5 w-5 mr-2" />
+                {loading ? 'ゲストログイン中...' : 'ゲストとして利用'}
               </Button>
               
               <p className="text-xs text-gray-500 mt-2 text-center">
