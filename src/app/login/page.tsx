@@ -59,7 +59,6 @@ export default function LoginPage() {
           }
         },
         status: 'offline',
-        location: undefined,
         joinedAt: new Date(),
         lastActiveAt: new Date()
       });

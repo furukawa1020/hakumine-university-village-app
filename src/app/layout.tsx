@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { PWAInstallButton } from "@/components/ui/PWAInstallButton";
@@ -14,12 +14,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#2563eb',
+}
+
 export const metadata: Metadata = {
   title: "白峰大学村アプリ",
   description: "白峰大学村参加学生向けコミュニティアプリ",
   manifest: "/manifest.json",
-  themeColor: "#2563eb",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -46,36 +52,38 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js', { scope: '/' })
-                    .then(function(registration) {
-                      console.log('✅ Service Worker registered successfully:', registration);
-                      console.log('Scope:', registration.scope);
-                      
-                      // アップデートをチェック
-                      registration.addEventListener('updatefound', () => {
-                        console.log('🔄 Service Worker update found');
+              if (typeof window !== 'undefined') {
+                if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                      .then(function(registration) {
+                        console.log('✅ Service Worker registered successfully:', registration);
+                        console.log('Scope:', registration.scope);
+                        
+                        // アップデートをチェック
+                        registration.addEventListener('updatefound', () => {
+                          console.log('🔄 Service Worker update found');
+                        });
+                      })
+                      .catch(function(registrationError) {
+                        console.error('❌ Service Worker registration failed:', registrationError);
                       });
-                    })
-                    .catch(function(registrationError) {
-                      console.error('❌ Service Worker registration failed:', registrationError);
-                    });
+                  });
+                } else {
+                  console.log('❌ Service Worker not supported');
+                }
+
+                // PWA インストール関連のデバッグ
+                window.addEventListener('beforeinstallprompt', (e) => {
+                  console.log('✅ PWA Install prompt ready');
+                  e.preventDefault();
+                  window.deferredPrompt = e;
                 });
-              } else {
-                console.log('❌ Service Worker not supported');
+
+                window.addEventListener('appinstalled', (evt) => {
+                  console.log('✅ PWA was installed successfully');
+                });
               }
-
-              // PWA インストール関連のデバッグ
-              window.addEventListener('beforeinstallprompt', (e) => {
-                console.log('✅ PWA Install prompt ready');
-                e.preventDefault();
-                window.deferredPrompt = e;
-              });
-
-              window.addEventListener('appinstalled', (evt) => {
-                console.log('✅ PWA was installed successfully');
-              });
             `,
           }}
         />

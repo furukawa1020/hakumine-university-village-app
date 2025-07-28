@@ -88,6 +88,9 @@ export default function QuestDetailPage() {
   const handleDeleteQuest = async () => {
     if (!user || !quest) return;
     
+    // ブラウザ環境でのみconfirmを表示
+    if (typeof window === 'undefined') return;
+    
     const confirmDelete = window.confirm('このクエストを削除してもよろしいですか？この操作は取り消せません。');
     if (!confirmDelete) return;
 
