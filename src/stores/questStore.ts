@@ -46,6 +46,7 @@ interface QuestStore {
   fetchQuestById: (id: string) => Promise<Quest | null>;
   participateInQuest: (questId: string, userId: string, userName: string) => Promise<void>;
   cancelParticipation: (questId: string, userId: string) => Promise<void>;
+  deleteQuest: (questId: string) => Promise<void>;
   updateQuestLocally: (questId: string, updates: Partial<Quest>) => void;
   setError: (error: string | null) => void;
   setLoading: (loading: boolean) => void;
@@ -70,90 +71,50 @@ export const useQuestStore = create<QuestStore>((set, get) => ({
       //   updatedAt: doc.data().updatedAt.toDate(),
       // })) as Quest[];
       
-      // デモ用サンプルデータ
+      // デモ用サンプルデータ（最小限のサンプル）
       const sampleQuests: Quest[] = [
         {
           id: '1',
           title: '白峰地区の雪かき',
-          description: '白峰地区の主要道路と歩道の雪かきを行います。地域の方々と一緒に作業することで、コミュニティとの繋がりを深めましょう。',
-          detailedDescription: `白峰地区では毎年冬になると大量の雪が積もり、住民の皆さまの生活に支障をきたします。この雪かきクエストでは、地域の主要道路と歩道の除雪作業を行います。
-
-作業内容：
-• 白峰コミュニティセンター周辺の除雪
-• 主要道路の歩道除雪
-• 高齢者宅周辺の除雪（希望があれば）
-• 除雪した雪の適切な処理
-
-このクエストを通じて、白峰の冬の生活を支え、地域コミュニティとの絆を深めることができます。作業後は温かい豚汁を用意しておりますので、参加者同士の交流もお楽しみください。`,
-          startDateTime: new Date('2025-01-15T09:00:00'),
-          endDateTime: new Date('2025-01-15T12:00:00'),
+          description: '白峰地区の主要道路と歩道の雪かきを行います。',
+          startDateTime: new Date('2025-02-15T09:00:00'),
+          endDateTime: new Date('2025-02-15T12:00:00'),
           place: '白峰地区コミュニティセンター',
           capacity: 10,
-          participants: 7,
+          participants: 2,
           difficulty: 'medium',
           category: '地域貢献',
-          rewards: ['雪かき達成バッジ', '地域交流ポイント'],
+          rewards: ['雪かき達成バッジ'],
           organizer: '白峰村役場',
-          organizerContact: {
-            name: '田中 太郎',
-            email: 'tanaka@hakumine.jp',
-            phone: '076-123-4567'
-          },
           status: 'open',
-          imageUrl: '/quest-images/snow-removal.jpg',
-          requirements: '防寒着、長靴、手袋必須。雪かき用スコップは貸し出します。',
-          notes: '天候により中止の場合があります。前日18:00までに連絡いたします。',
+          requirements: '防寒着、長靴、手袋必須。',
           participantsList: [
-            { id: 'user1', name: '山田花子', joinedAt: new Date('2025-01-10T10:00:00') },
-            { id: 'user2', name: '佐藤次郎', joinedAt: new Date('2025-01-10T14:30:00') },
-            { id: 'user3', name: '鈴木美咲', joinedAt: new Date('2025-01-11T09:15:00') },
-            { id: 'user4', name: '高橋健太', joinedAt: new Date('2025-01-11T16:45:00') },
-            { id: 'user5', name: '伊藤里奈', joinedAt: new Date('2025-01-12T11:20:00') },
-            { id: 'user6', name: '渡辺拓也', joinedAt: new Date('2025-01-12T19:30:00') },
-            { id: 'user7', name: '小林さくら', joinedAt: new Date('2025-01-13T08:45:00') }
+            { id: 'sample1', name: 'サンプル太郎', joinedAt: new Date('2025-01-10T10:00:00') },
+            { id: 'sample2', name: 'サンプル花子', joinedAt: new Date('2025-01-10T14:30:00') }
           ],
           createdAt: new Date('2025-01-05T00:00:00'),
-          updatedAt: new Date('2025-01-13T08:45:00')
+          updatedAt: new Date('2025-01-10T14:30:00')
         },
         {
           id: '2',
-          title: '薪割り体験と学習',
-          description: '伝統的な薪割り技術を学び、実際に体験します。地元の職人から技術を学び、白峰の文化に触れる貴重な機会です。',
-          detailedDescription: `白峰地域に古くから伝わる薪割り技術を学ぶ体験型クエストです。地元の熟練職人が直接指導し、安全で効率的な薪割りの方法を身につけることができます。
-
-体験内容：
-• 薪割りの基本姿勢と安全な作業方法
-• 斧の正しい使い方と手入れ方法
-• 木材の種類と特性の違い
-• 実際の薪割り体験（1人5〜10本程度）
-• 作業後の道具手入れ
-
-作業で割った薪は一部お持ち帰りいただけます。また、体験後は白峰の伝統的な温泉でゆっくりと疲れを癒していただけます（入浴券プレゼント）。`,
-          startDateTime: new Date('2025-01-16T14:00:00'),
-          endDateTime: new Date('2025-01-16T16:00:00'),
+          title: '薪割り体験',
+          description: '伝統的な薪割り技術を学び、実際に体験します。',
+          startDateTime: new Date('2025-02-16T14:00:00'),
+          endDateTime: new Date('2025-02-16T16:00:00'),
           place: '白峰伝統工芸館',
           capacity: 8,
-          participants: 3,
+          participants: 1,
           difficulty: 'easy',
           category: '文化体験',
-          rewards: ['薪割り体験バッジ', '温泉入浴券', '薪のお土産'],
+          rewards: ['薪割り体験バッジ'],
           organizer: '白峰伝統工芸保存会',
-          organizerContact: {
-            name: '職人 松本',
-            email: 'matsumoto@traditional-craft.jp',
-            phone: '076-987-6543'
-          },
           status: 'open',
-          imageUrl: '/quest-images/wood-splitting.jpg',
-          requirements: '動きやすい服装、閉じた靴（サンダル不可）。軍手・保護メガネは提供します。',
-          notes: '雨天決行（屋根のある作業場で実施）',
+          requirements: '動きやすい服装、閉じた靴必須。',
           participantsList: [
-            { id: 'user8', name: '中村和彦', joinedAt: new Date('2025-01-10T15:20:00') },
-            { id: 'user9', name: '木村優子', joinedAt: new Date('2025-01-11T10:45:00') },
-            { id: 'user10', name: '森田大輔', joinedAt: new Date('2025-01-12T14:15:00') }
+            { id: 'sample3', name: 'サンプル次郎', joinedAt: new Date('2025-01-11T10:45:00') }
           ],
           createdAt: new Date('2025-01-05T00:00:00'),
-          updatedAt: new Date('2025-01-12T14:15:00')
+          updatedAt: new Date('2025-01-11T10:45:00')
         }
       ];
       
@@ -293,6 +254,23 @@ export const useQuestStore = create<QuestStore>((set, get) => ({
     } catch (error) {
       console.error('Error cancelling participation:', error);
       set({ error: '参加キャンセルに失敗しました', loading: false });
+      throw error;
+    }
+  },
+
+  deleteQuest: async (questId: string) => {
+    set({ loading: true, error: null });
+    try {
+      // TODO: Firestoreからクエストを削除
+      // await deleteDoc(doc(db, 'quests', questId));
+
+      // ローカル状態からクエストを削除
+      const { quests } = get();
+      const updatedQuests = quests.filter(quest => quest.id !== questId);
+      set({ quests: updatedQuests, loading: false });
+    } catch (error) {
+      console.error('Error deleting quest:', error);
+      set({ error: 'クエストの削除に失敗しました', loading: false });
       throw error;
     }
   },

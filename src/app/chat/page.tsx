@@ -27,87 +27,44 @@ import {
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 
-// サンプルチャットルーム
+// サンプルチャットルーム（最小限のサンプル）
 const sampleRooms = [
   { 
     id: 'general', 
     name: '全体チャット', 
     type: 'general',
     icon: Hash,
-    unreadCount: 3,
-    lastMessage: '明日の雪かきクエスト、参加します！',
-    lastMessageTime: new Date('2025-01-14T15:30:00')
+    unreadCount: 1,
+    lastMessage: '新しいクエストが追加されました',
+    lastMessageTime: new Date('2025-01-28T15:30:00')
   },
   { 
     id: 'snow-removal', 
     name: '雪かきクエスト', 
     type: 'quest',
     icon: Hash,
-    unreadCount: 1,
-    lastMessage: '集合場所は白峰コミュニティセンターです',
-    lastMessageTime: new Date('2025-01-14T14:20:00')
-  },
-  { 
-    id: 'wood-splitting', 
-    name: '薪割り体験', 
-    type: 'quest',
-    icon: Hash,
     unreadCount: 0,
-    lastMessage: '次回は来週開催予定です',
-    lastMessageTime: new Date('2025-01-13T16:45:00')
-  },
-  { 
-    id: 'random', 
-    name: '雑談', 
-    type: 'general',
-    icon: Hash,
-    unreadCount: 7,
-    lastMessage: '白峰の温泉、とても良かったです♨️',
-    lastMessageTime: new Date('2025-01-14T12:15:00')
+    lastMessage: '参加ありがとうございました',
+    lastMessageTime: new Date('2025-01-28T14:20:00')
   }
 ];
 
-// サンプルメッセージ
+// サンプルメッセージ（最小限のサンプル）
 const sampleMessages = [
   {
     id: '1',
-    userId: 'user1',
-    userName: '田中さん',
-    content: 'おはようございます！今日も一日よろしくお願いします。',
-    timestamp: new Date('2025-01-14T09:00:00'),
+    userId: 'sample1',
+    userName: 'サンプルユーザー',
+    content: 'こんにちは！白峰大学村へようこそ。',
+    timestamp: new Date('2025-01-28T09:00:00'),
     type: 'text'
   },
   {
     id: '2',
-    userId: 'user2', 
-    userName: '佐藤さん',
-    content: 'おはようございます！今日の雪かきクエスト、楽しみですね。',
-    timestamp: new Date('2025-01-14T09:05:00'),
-    type: 'text'
-  },
-  {
-    id: '3',
     userId: 'current',
     userName: 'あなた',
-    content: 'はい！みんなで頑張りましょう💪',
-    timestamp: new Date('2025-01-14T09:10:00'),
-    type: 'text'
-  },
-  {
-    id: '4',
-    userId: 'user3',
-    userName: '山田さん',
-    content: '音声メッセージを送信しました',
-    timestamp: new Date('2025-01-14T09:15:00'),
-    type: 'voice',
-    duration: 12
-  },
-  {
-    id: '5',
-    userId: 'user1',
-    userName: '田中さん',
-    content: '集合時間は9時30分でしたよね？',
-    timestamp: new Date('2025-01-14T09:20:00'),
+    content: 'よろしくお願いします！',
+    timestamp: new Date('2025-01-28T09:05:00'),
     type: 'text'
   }
 ];

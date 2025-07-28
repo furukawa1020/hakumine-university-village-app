@@ -19,6 +19,17 @@ import { useAuthStore } from '@/stores/authStore';
 import dynamic from 'next/dynamic';
 import AvatarMovementRealtime from '@/components/avatar/AvatarMovementRealtime';
 
+// Leafletアイコンの修正
+import L from 'leaflet';
+
+// デフォルトアイコンの修正
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: '/leaflet/marker-icon-2x.png',
+  iconUrl: '/leaflet/marker-icon.png',
+  shadowUrl: '/leaflet/marker-shadow.png',
+});
+
 // Leafletを動的インポート（SSR回避）
 const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
@@ -43,20 +54,12 @@ const Popup = dynamic(
 // 白峰エリアの座標（石川県白山市白峰）
 const HAKUMINE_CENTER = [36.2547, 136.6342];
 
-// サンプルユーザーデータ
-const sampleUsers = [
-  { id: '1', name: '田中さん', location: [36.2550, 136.6345], status: 'online', activity: '雪かき中' },
-  { id: '2', name: '佐藤さん', location: [36.2545, 136.6340], status: 'online', activity: '散歩中' },
-  { id: '3', name: '山田さん', location: [36.2552, 136.6348], status: 'away', activity: '薪割り体験' },
-  { id: '4', name: '鈴木さん', location: [36.2548, 136.6342], status: 'online', activity: 'カフェにいます' },
-];
-
 export default function MapPage() {
   const { user } = useAuthStore();
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [locationSharing, setLocationSharing] = useState(false);
   const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'pending'>('pending');
-  const [onlineUsers] = useState(sampleUsers);
+  const [onlineUsers] = useState<any[]>([]); // 実際のユーザーデータは今後Firebase等から取得
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -260,16 +263,7 @@ export default function MapPage() {
         </div>
 
         {/* マップエリア */}
-        <div className="flex-1 relative">
-          {/* インタラクティブなアバター移動エリア */}
-          <div className="absolute inset-0 z-10 pointer-events-none">
-            <div className="relative w-full h-full pointer-events-auto">
-              <AvatarMovementRealtime />
-              
-              {/* リアルタイム同期アバター（他ユーザー含む） */}
-            </div>
-          </div>
-
+        <div className="flex-1 relative">          
           {userLocation && (
             <MapContainer
               center={userLocation}
@@ -293,34 +287,31 @@ export default function MapPage() {
                   </Popup>
                 </Marker>
               )}
-              
-              {/* 他のユーザーのマーカー */}
-              {onlineUsers.map((u) => (
-                <Marker key={u.id} position={u.location as [number, number]}>
-                  <Popup>
-                    <div className="text-center">
-                      <div className="font-bold">{u.name}</div>
-                      <div className="text-sm text-gray-600">{u.activity}</div>
-                      <div className={`text-xs ${
-                        u.status === 'online' ? 'text-green-600' : 'text-gray-500'
-                      }`}>
-                        {u.status === 'online' ? 'オンライン' : '離席中'}
-                      </div>
-                    </div>
-                  </Popup>
-                </Marker>
-              ))}
             </MapContainer>
           )}
+
+          {/* インタラクティブなアバター移動エリア（地図上のオーバーレイ） */}
+          <div className="absolute inset-0 z-10 pointer-events-none">
+            <div className="relative w-full h-full pointer-events-auto bg-transparent">
+              <AvatarMovementRealtime />
+            </div>
+            
+            {/* 操作説明 */}
+            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 text-sm text-gray-600">
+              <p className="font-medium mb-1">アバター操作:</p>
+              <p>矢印キー または WASD で移動</p>
+            </div>
+          </div>
           
           {/* マップが読み込めない場合のフォールバック */}
           {!userLocation && (
             <div className="flex items-center justify-center h-full bg-gray-100">
               <div className="text-center">
                 <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">位置情報を取得できませんでした</p>
+                <p className="text-gray-600 mb-2">位置情報を取得できませんでした</p>
+                <p className="text-sm text-gray-500 mb-4">位置情報を許可してください</p>
                 <Button className="mt-4" onClick={requestLocationPermission}>
-                  再試行
+                  位置情報を許可する
                 </Button>
               </div>
             </div>

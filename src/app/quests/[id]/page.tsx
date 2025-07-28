@@ -19,7 +19,8 @@ import {
   AlertCircle,
   CheckCircle,
   UserPlus,
-  UserMinus
+  UserMinus,
+  Trash2
 } from 'lucide-react';
 import Link from 'next/link';
 import { Quest } from '@/types';
@@ -28,7 +29,7 @@ export default function QuestDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuthStore();
-  const { fetchQuestById, participateInQuest, cancelParticipation } = useQuestStore();
+  const { fetchQuestById, participateInQuest, cancelParticipation, deleteQuest } = useQuestStore();
   const [quest, setQuest] = useState<Quest | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -79,6 +80,24 @@ export default function QuestDetailPage() {
       setQuest(updatedQuest);
     } catch (error) {
       console.error('参加キャンセルに失敗しました:', error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteQuest = async () => {
+    if (!user || !quest) return;
+    
+    const confirmDelete = window.confirm('このクエストを削除してもよろしいですか？この操作は取り消せません。');
+    if (!confirmDelete) return;
+
+    setActionLoading(true);
+    try {
+      await deleteQuest(quest.id);
+      router.push('/quests');
+    } catch (error) {
+      console.error('クエストの削除に失敗しました:', error);
+      alert('クエストの削除に失敗しました');
     } finally {
       setActionLoading(false);
     }
@@ -308,6 +327,26 @@ export default function QuestDetailPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* 管理者専用：削除ボタン */}
+          {user && (quest.organizer === user.displayName || user.displayName?.includes('管理者')) && (
+            <Card className="border-red-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-red-600">管理者操作</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  onClick={handleDeleteQuest}
+                  disabled={actionLoading}
+                  variant="destructive"
+                  className="w-full"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {actionLoading ? '削除中...' : 'クエストを削除'}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           {/* 主催者情報 */}
           <Card>
