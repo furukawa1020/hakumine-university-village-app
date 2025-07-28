@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import 'leaflet/dist/leaflet.css';
 import { PWAInstallButton } from "@/components/ui/PWAInstallButton";
 import { AuthInitializer } from "@/components/AuthInitializer";
 
