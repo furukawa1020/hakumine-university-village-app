@@ -2,8 +2,30 @@
 
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
-import { doc, updateDoc, onSnapshot, collection, setDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+
+// Firebase関連を動的インポートでエラーハンドリング
+let firestoreFunctions: any = null;
+let db: any = null;
+
+// Firebase機能の動的読み込み
+const loadFirestore = async () => {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const [firestoreModule, firebaseModule] = await Promise.all([
+      import('firebase/firestore'),
+      import('@/lib/firebase')
+    ]);
+    
+    firestoreFunctions = firestoreModule;
+    db = firebaseModule.db;
+    
+    return { firestoreFunctions, db };
+  } catch (error) {
+    console.warn('Firebase Firestore loading failed:', error);
+    return null;
+  }
+};
 
 interface Position {
   x: number;
@@ -29,7 +51,7 @@ export default function AvatarMovement() {
 
   // ユーザーのアバター設定を取得
   useEffect(() => {
-    if (!user || typeof window === 'undefined') return;
+    if (!user) return;
     
     if (isGuest) {
       // ゲストユーザーの場合、localStorageからアバター設定を取得
@@ -56,7 +78,14 @@ export default function AvatarMovement() {
 
     const initializeUserPosition = async () => {
       try {
-        const userRef = doc(db, 'userPositions', user.uid);
+        const firebaseServices = await loadFirestore();
+        if (!firebaseServices || !firebaseServices.db || !firebaseServices.firestoreFunctions) {
+          console.warn('Firebase services not available, skipping position initialization');
+          return;
+        }
+
+        const { doc, setDoc } = firebaseServices.firestoreFunctions;
+        const userRef = doc(firebaseServices.db, 'userPositions', user.uid);
         await setDoc(userRef, {
           position: { x: 50, y: 50 },
           direction: 'down',
@@ -78,7 +107,14 @@ export default function AvatarMovement() {
     if (!user || isGuest) return; // ゲストユーザーの場合はFirebase更新をスキップ
 
     try {
-      const userRef = doc(db, 'userPositions', user.uid);
+      const firebaseServices = await loadFirestore();
+      if (!firebaseServices || !firebaseServices.db || !firebaseServices.firestoreFunctions) {
+        console.warn('Firebase services not available, skipping position update');
+        return;
+      }
+
+      const { doc, updateDoc } = firebaseServices.firestoreFunctions;
+      const userRef = doc(firebaseServices.db, 'userPositions', user.uid);
       await updateDoc(userRef, {
         position: newPosition,
         direction: newDirection,
@@ -102,31 +138,54 @@ export default function AvatarMovement() {
       return;
     }
 
-    const unsubscribe = onSnapshot(collection(db, 'userPositions'), (snapshot) => {
-      const users: UserAvatar[] = [];
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (doc.id !== user.uid) { // 自分以外のユーザー
-          users.push({
-            id: doc.id,
-            name: data.name || '匿名',
-            position: data.position || { x: 50, y: 50 },
-            isMoving: data.isMoving || false,
-            direction: data.direction || 'down',
-            lastSeen: data.lastSeen?.toDate() || new Date()
-          });
+    const setupUserMonitoring = async () => {
+      try {
+        const firebaseServices = await loadFirestore();
+        if (!firebaseServices || !firebaseServices.db || !firebaseServices.firestoreFunctions) {
+          console.warn('Firebase services not available, skipping user monitoring');
+          return;
         }
-      });
-      setOtherUsers(users);
+
+        const { onSnapshot, collection } = firebaseServices.firestoreFunctions;
+        const unsubscribe = onSnapshot(collection(firebaseServices.db, 'userPositions'), (snapshot: any) => {
+          const users: UserAvatar[] = [];
+          snapshot.forEach((doc: any) => {
+            const data = doc.data();
+            if (doc.id !== user.uid) { // 自分以外のユーザー
+              users.push({
+                id: doc.id,
+                name: data.name || '匿名',
+                position: data.position || { x: 50, y: 50 },
+                isMoving: data.isMoving || false,
+                direction: data.direction || 'down',
+                lastSeen: data.lastSeen?.toDate() || new Date()
+              });
+            }
+          });
+          setOtherUsers(users);
+        });
+
+        return unsubscribe;
+      } catch (error) {
+        console.error('Failed to setup user monitoring:', error);
+        return null;
+      }
+    };
+
+    let unsubscribe: (() => void) | null = null;
+    setupUserMonitoring().then((unsub) => {
+      unsubscribe = unsub;
     });
 
-    return () => unsubscribe();
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [user, isGuest]);
 
   // キーボード移動処理
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
     const handleKeyPress = (e: KeyboardEvent) => {
       const moveSpeed = 2;
       let newPosition = { ...position };
@@ -175,101 +234,90 @@ export default function AvatarMovement() {
       }, 200);
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('keydown', handleKeyPress);
-    }
-    
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('keydown', handleKeyPress);
-      }
-    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
   }, [position, direction, updateUserPosition]);
 
   return (
-    <>
-      {typeof window !== 'undefined' && (
-        <div className="relative w-full h-full">
-          {/* 自分のアバター */}
+    <div className="relative w-full h-full">
+      {/* 自分のアバター */}
+      <div
+        className={`absolute transition-all duration-200 ${isMoving ? 'animate-bounce' : ''}`}
+        style={{
+          left: `${position.x}%`,
+          top: `${position.y}%`,
+          transform: 'translate(-50%, -50%)'
+        }}
+      >
+        <div className={`
+          w-12 h-12 rounded-full border-4 border-blue-600 bg-blue-500 
+          flex items-center justify-center text-white font-bold text-sm
+          ${isMoving ? 'scale-110' : 'scale-100'}
+          transition-transform duration-200
+          ${direction === 'left' ? 'scale-x-[-1]' : ''}
+        `}>
+          {user?.displayName?.charAt(0) || '?'}
+        </div>
+
+        {/* 移動方向インジケーター */}
+        {isMoving && (
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
+          </div>
+        )}
+
+        {/* 名前表示 */}
+        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
+          {user?.displayName || 'あなた'}
+        </div>
+      </div>
+
+      {/* 他のユーザーのアバター */}
+      {otherUsers.map((otherUser) => {
+        const isRecent = new Date().getTime() - otherUser.lastSeen.getTime() < 30000; // 30秒以内
+        if (!isRecent) return null;
+
+        return (
           <div
-            className={`absolute transition-all duration-200 ${isMoving ? 'animate-bounce' : ''}`}
+            key={otherUser.id}
+            className={`absolute transition-all duration-300 ${otherUser.isMoving ? 'animate-bounce' : ''}`}
             style={{
-              left: `${position.x}%`,
-              top: `${position.y}%`,
+              left: `${otherUser.position.x}%`,
+              top: `${otherUser.position.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
           >
             <div className={`
-              w-12 h-12 rounded-full border-4 border-blue-600 bg-blue-500 
+              w-12 h-12 rounded-full border-4 border-green-600 bg-green-500 
               flex items-center justify-center text-white font-bold text-sm
-              ${isMoving ? 'scale-110' : 'scale-100'}
+              ${otherUser.isMoving ? 'scale-110' : 'scale-100'}
               transition-transform duration-200
-              ${direction === 'left' ? 'scale-x-[-1]' : ''}
+              ${otherUser.direction === 'left' ? 'scale-x-[-1]' : ''}
             `}>
-              {user?.displayName?.charAt(0) || '?'}
+              {otherUser.name?.charAt(0) || '?'}
             </div>
 
             {/* 移動方向インジケーター */}
-            {isMoving && (
+            {otherUser.isMoving && (
               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
               </div>
             )}
 
             {/* 名前表示 */}
             <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-              {user?.displayName || 'あなた'}
+              {otherUser.name}
             </div>
           </div>
+        );
+      })}
 
-          {/* 他のユーザーのアバター */}
-          {otherUsers.map((otherUser) => {
-            const isRecent = new Date().getTime() - otherUser.lastSeen.getTime() < 30000; // 30秒以内
-            if (!isRecent) return null;
-
-            return (
-              <div
-                key={otherUser.id}
-                className={`absolute transition-all duration-300 ${otherUser.isMoving ? 'animate-bounce' : ''}`}
-                style={{
-                  left: `${otherUser.position.x}%`,
-                  top: `${otherUser.position.y}%`,
-                  transform: 'translate(-50%, -50%)'
-                }}
-              >
-                <div className={`
-                  w-12 h-12 rounded-full border-4 border-green-600 bg-green-500 
-                  flex items-center justify-center text-white font-bold text-sm
-                  ${otherUser.isMoving ? 'scale-110' : 'scale-100'}
-                  transition-transform duration-200
-                  ${otherUser.direction === 'left' ? 'scale-x-[-1]' : ''}
-                `}>
-                  {otherUser.name?.charAt(0) || '?'}
-                </div>
-
-                {/* 移動方向インジケーター */}
-                {otherUser.isMoving && (
-                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
-                  </div>
-                )}
-
-                {/* 名前表示 */}
-                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-                  {otherUser.name}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* 操作説明とオンライン人数 */}
-          <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur-sm p-3 rounded-lg text-xs">
-            <p className="font-medium mb-1">アバター操作：</p>
-            <p>矢印キー または WASD で移動</p>
-            <p className="text-green-600 mt-2">オンライン: {otherUsers.length + 1}人</p>
-          </div>
-        </div>
-      )}
-    </>
+      {/* 操作説明とオンライン人数 */}
+      <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur-sm p-3 rounded-lg text-xs">
+        <p className="font-medium mb-1">アバター操作：</p>
+        <p>矢印キー または WASD で移動</p>
+        <p className="text-green-600 mt-2">オンライン: {otherUsers.length + 1}人</p>
+      </div>
+    </div>
   );
 }

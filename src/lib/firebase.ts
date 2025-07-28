@@ -23,7 +23,15 @@ let firebaseStorage: FirebaseStorage | null = null;
 // Firebase初期化関数（遅延初期化）
 function initializeFirebase() {
   // サーバーサイドでは初期化しない
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') {
+    console.log('Server-side execution: skipping Firebase initialization');
+    return null;
+  }
+
+  // すでに初期化済みの場合はスキップ
+  if (firebaseApp && firebaseAuth && firebaseDB && firebaseStorage) {
+    return { app: firebaseApp, auth: firebaseAuth, db: firebaseDB, storage: firebaseStorage };
+  }
   
   try {
     // すでに初期化済みの場合は既存のアプリを使用
@@ -39,10 +47,10 @@ function initializeFirebase() {
     }
 
     // Services を初期化
-    if (firebaseApp && !firebaseAuth) {
-      firebaseAuth = getAuth(firebaseApp);
-      firebaseDB = getFirestore(firebaseApp);
-      firebaseStorage = getStorage(firebaseApp);
+    if (firebaseApp) {
+      if (!firebaseAuth) firebaseAuth = getAuth(firebaseApp);
+      if (!firebaseDB) firebaseDB = getFirestore(firebaseApp);
+      if (!firebaseStorage) firebaseStorage = getStorage(firebaseApp);
     }
 
     return { app: firebaseApp, auth: firebaseAuth, db: firebaseDB, storage: firebaseStorage };
