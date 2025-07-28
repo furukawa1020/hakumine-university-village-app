@@ -3,29 +3,43 @@
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 
-// Firebase関連を動的インポートでエラーハンドリング
-let firestoreFunctions: any = null;
-let db: any = null;
+// Firebase関連のインポートを条件付きで処理
+let firebaseLoaded = false;
+let doc: any, updateDoc: any, onSnapshot: any, collection: any, setDoc: any, db: any;
 
-// Firebase機能の動的読み込み
-const loadFirestore = async () => {
-  if (typeof window === 'undefined') return null;
+// Firebase機能の初期化を試行
+async function initializeFirebaseFeatures() {
+  if (firebaseLoaded) return;
   
   try {
-    const [firestoreModule, firebaseModule] = await Promise.all([
-      import('firebase/firestore'),
-      import('@/lib/firebase')
-    ]);
+    // Firebase設定をチェック
+    const hasFirebaseConfig = 
+      process.env.NEXT_PUBLIC_FIREBASE_API_KEY && 
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+      process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'demo-api-key' &&
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== 'demo-project';
+
+    if (!hasFirebaseConfig) {
+      console.log('Firebase設定が不完全です。ローカルモードで動作します。');
+      return;
+    }
+
+    const { doc: docImport, updateDoc: updateDocImport, onSnapshot: onSnapshotImport, collection: collectionImport, setDoc: setDocImport } = await import('firebase/firestore');
+    const { db: dbImport } = await import('@/lib/firebase');
     
-    firestoreFunctions = firestoreModule;
-    db = firebaseModule.db;
+    doc = docImport;
+    updateDoc = updateDocImport;
+    onSnapshot = onSnapshotImport;
+    collection = collectionImport;
+    setDoc = setDocImport;
+    db = dbImport;
     
-    return { firestoreFunctions, db };
+    firebaseLoaded = true;
+    console.log('Firebase機能を初期化しました');
   } catch (error) {
-    console.warn('Firebase Firestore loading failed:', error);
-    return null;
+    console.log('Firebase機能の初期化に失敗しました。ローカルモードで動作します:', error);
   }
-};
+}
 
 interface Position {
   x: number;
@@ -49,6 +63,11 @@ export default function AvatarMovement() {
   const [otherUsers, setOtherUsers] = useState<UserAvatar[]>([]);
   const [userAvatar, setUserAvatar] = useState<any>(null);
 
+  // 初回ロード時にFirebase初期化を試行
+  useEffect(() => {
+    initializeFirebaseFeatures();
+  }, []);
+
   // ユーザーのアバター設定を取得
   useEffect(() => {
     if (!user) return;
@@ -70,22 +89,17 @@ export default function AvatarMovement() {
   useEffect(() => {
     if (!user) return;
     
-    // ゲストユーザーの場合はFirebase同期をスキップ
-    if (isGuest) {
-      console.log('ゲストユーザーのため、Firebase同期をスキップします');
+    // ゲストユーザーまたはFirebaseが利用できない場合はスキップ
+    if (isGuest || !firebaseLoaded) {
+      console.log('ゲストユーザーまたはFirebase未初期化のため、Firebase同期をスキップします');
       return;
     }
 
     const initializeUserPosition = async () => {
       try {
-        const firebaseServices = await loadFirestore();
-        if (!firebaseServices || !firebaseServices.db || !firebaseServices.firestoreFunctions) {
-          console.warn('Firebase services not available, skipping position initialization');
-          return;
-        }
-
-        const { doc, setDoc } = firebaseServices.firestoreFunctions;
-        const userRef = doc(firebaseServices.db, 'userPositions', user.uid);
+        if (!doc || !setDoc || !db) return;
+        
+        const userRef = doc(db, 'userPositions', user.uid);
         await setDoc(userRef, {
           position: { x: 50, y: 50 },
           direction: 'down',
@@ -99,22 +113,22 @@ export default function AvatarMovement() {
       }
     };
 
-    initializeUserPosition();
+    // Firebase初期化後に実行
+    initializeFirebaseFeatures().then(() => {
+      if (firebaseLoaded) {
+        initializeUserPosition();
+      }
+    });
   }, [user, isGuest]);
 
   // Firebase同期：自分の位置を更新
   const updateUserPosition = async (newPosition: Position, newDirection: string, moving: boolean) => {
-    if (!user || isGuest) return; // ゲストユーザーの場合はFirebase更新をスキップ
+    if (!user || isGuest || !firebaseLoaded) return; // ゲストユーザーまたはFirebase未初期化の場合はスキップ
 
     try {
-      const firebaseServices = await loadFirestore();
-      if (!firebaseServices || !firebaseServices.db || !firebaseServices.firestoreFunctions) {
-        console.warn('Firebase services not available, skipping position update');
-        return;
-      }
-
-      const { doc, updateDoc } = firebaseServices.firestoreFunctions;
-      const userRef = doc(firebaseServices.db, 'userPositions', user.uid);
+      if (!updateDoc || !doc || !db) return;
+      
+      const userRef = doc(db, 'userPositions', user.uid);
       await updateDoc(userRef, {
         position: newPosition,
         direction: newDirection,
@@ -132,22 +146,20 @@ export default function AvatarMovement() {
   useEffect(() => {
     if (!user) return;
     
-    // ゲストユーザーの場合はFirebase監視をスキップ
-    if (isGuest) {
-      console.log('ゲストユーザーのため、他ユーザー監視をスキップします');
+    // ゲストユーザーまたはFirebaseが利用できない場合はスキップ
+    if (isGuest || !firebaseLoaded) {
+      console.log('ゲストユーザーまたはFirebase未初期化のため、他ユーザー監視をスキップします');
       return;
     }
 
-    const setupUserMonitoring = async () => {
-      try {
-        const firebaseServices = await loadFirestore();
-        if (!firebaseServices || !firebaseServices.db || !firebaseServices.firestoreFunctions) {
-          console.warn('Firebase services not available, skipping user monitoring');
-          return;
-        }
+    // Firebase初期化後に実行
+    let unsubscribe: any;
+    
+    initializeFirebaseFeatures().then(() => {
+      if (!firebaseLoaded || !onSnapshot || !collection || !db) return;
 
-        const { onSnapshot, collection } = firebaseServices.firestoreFunctions;
-        const unsubscribe = onSnapshot(collection(firebaseServices.db, 'userPositions'), (snapshot: any) => {
+      try {
+        unsubscribe = onSnapshot(collection(db, 'userPositions'), (snapshot: any) => {
           const users: UserAvatar[] = [];
           snapshot.forEach((doc: any) => {
             const data = doc.data();
@@ -164,17 +176,9 @@ export default function AvatarMovement() {
           });
           setOtherUsers(users);
         });
-
-        return unsubscribe;
       } catch (error) {
-        console.error('Failed to setup user monitoring:', error);
-        return null;
+        console.error('Failed to listen to user positions:', error);
       }
-    };
-
-    let unsubscribe: (() => void) | null = null;
-    setupUserMonitoring().then((unsub) => {
-      unsubscribe = unsub;
     });
 
     return () => {
@@ -224,8 +228,10 @@ export default function AvatarMovement() {
       setDirection(newDirection);
       setIsMoving(true);
 
-      // Firebase に位置を同期
-      updateUserPosition(newPosition, newDirection, true);
+      // Firebase に位置を同期（利用可能な場合のみ）
+      if (firebaseLoaded) {
+        updateUserPosition(newPosition, newDirection, true);
+      }
 
       // 移動アニメーションを停止
       setTimeout(() => {
