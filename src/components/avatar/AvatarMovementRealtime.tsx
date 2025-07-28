@@ -29,7 +29,7 @@ export default function AvatarMovement() {
 
   // ユーザーのアバター設定を取得
   useEffect(() => {
-    if (!user) return;
+    if (!user || typeof window === 'undefined') return;
     
     if (isGuest) {
       // ゲストユーザーの場合、localStorageからアバター設定を取得
@@ -125,6 +125,8 @@ export default function AvatarMovement() {
 
   // キーボード移動処理
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const handleKeyPress = (e: KeyboardEvent) => {
       const moveSpeed = 2;
       let newPosition = { ...position };
@@ -173,90 +175,101 @@ export default function AvatarMovement() {
       }, 200);
     };
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyPress);
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('keydown', handleKeyPress);
+      }
+    };
   }, [position, direction, updateUserPosition]);
 
   return (
-    <div className="relative w-full h-full">
-      {/* 自分のアバター */}
-      <div
-        className={`absolute transition-all duration-200 ${isMoving ? 'animate-bounce' : ''}`}
-        style={{
-          left: `${position.x}%`,
-          top: `${position.y}%`,
-          transform: 'translate(-50%, -50%)'
-        }}
-      >
-        <div className={`
-          w-12 h-12 rounded-full border-4 border-blue-600 bg-blue-500 
-          flex items-center justify-center text-white font-bold text-sm
-          ${isMoving ? 'scale-110' : 'scale-100'}
-          transition-transform duration-200
-          ${direction === 'left' ? 'scale-x-[-1]' : ''}
-        `}>
-          {user?.displayName?.charAt(0) || '?'}
-        </div>
-
-        {/* 移動方向インジケーター */}
-        {isMoving && (
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
-          </div>
-        )}
-
-        {/* 名前表示 */}
-        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-          {user?.displayName || 'あなた'}
-        </div>
-      </div>
-
-      {/* 他のユーザーのアバター */}
-      {otherUsers.map((otherUser) => {
-        const isRecent = new Date().getTime() - otherUser.lastSeen.getTime() < 30000; // 30秒以内
-        if (!isRecent) return null;
-
-        return (
+    <>
+      {typeof window !== 'undefined' && (
+        <div className="relative w-full h-full">
+          {/* 自分のアバター */}
           <div
-            key={otherUser.id}
-            className={`absolute transition-all duration-300 ${otherUser.isMoving ? 'animate-bounce' : ''}`}
+            className={`absolute transition-all duration-200 ${isMoving ? 'animate-bounce' : ''}`}
             style={{
-              left: `${otherUser.position.x}%`,
-              top: `${otherUser.position.y}%`,
+              left: `${position.x}%`,
+              top: `${position.y}%`,
               transform: 'translate(-50%, -50%)'
             }}
           >
             <div className={`
-              w-12 h-12 rounded-full border-4 border-green-600 bg-green-500 
+              w-12 h-12 rounded-full border-4 border-blue-600 bg-blue-500 
               flex items-center justify-center text-white font-bold text-sm
-              ${otherUser.isMoving ? 'scale-110' : 'scale-100'}
+              ${isMoving ? 'scale-110' : 'scale-100'}
               transition-transform duration-200
-              ${otherUser.direction === 'left' ? 'scale-x-[-1]' : ''}
+              ${direction === 'left' ? 'scale-x-[-1]' : ''}
             `}>
-              {otherUser.name?.charAt(0) || '?'}
+              {user?.displayName?.charAt(0) || '?'}
             </div>
 
             {/* 移動方向インジケーター */}
-            {otherUser.isMoving && (
+            {isMoving && (
               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
               </div>
             )}
 
             {/* 名前表示 */}
             <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-              {otherUser.name}
+              {user?.displayName || 'あなた'}
             </div>
           </div>
-        );
-      })}
 
-      {/* 操作説明とオンライン人数 */}
-      <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur-sm p-3 rounded-lg text-xs">
-        <p className="font-medium mb-1">アバター操作：</p>
-        <p>矢印キー または WASD で移動</p>
-        <p className="text-green-600 mt-2">オンライン: {otherUsers.length + 1}人</p>
-      </div>
-    </div>
+          {/* 他のユーザーのアバター */}
+          {otherUsers.map((otherUser) => {
+            const isRecent = new Date().getTime() - otherUser.lastSeen.getTime() < 30000; // 30秒以内
+            if (!isRecent) return null;
+
+            return (
+              <div
+                key={otherUser.id}
+                className={`absolute transition-all duration-300 ${otherUser.isMoving ? 'animate-bounce' : ''}`}
+                style={{
+                  left: `${otherUser.position.x}%`,
+                  top: `${otherUser.position.y}%`,
+                  transform: 'translate(-50%, -50%)'
+                }}
+              >
+                <div className={`
+                  w-12 h-12 rounded-full border-4 border-green-600 bg-green-500 
+                  flex items-center justify-center text-white font-bold text-sm
+                  ${otherUser.isMoving ? 'scale-110' : 'scale-100'}
+                  transition-transform duration-200
+                  ${otherUser.direction === 'left' ? 'scale-x-[-1]' : ''}
+                `}>
+                  {otherUser.name?.charAt(0) || '?'}
+                </div>
+
+                {/* 移動方向インジケーター */}
+                {otherUser.isMoving && (
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
+                  </div>
+                )}
+
+                {/* 名前表示 */}
+                <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
+                  {otherUser.name}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* 操作説明とオンライン人数 */}
+          <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur-sm p-3 rounded-lg text-xs">
+            <p className="font-medium mb-1">アバター操作：</p>
+            <p>矢印キー または WASD で移動</p>
+            <p className="text-green-600 mt-2">オンライン: {otherUsers.length + 1}人</p>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
