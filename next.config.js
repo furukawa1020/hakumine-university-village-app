@@ -1,18 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Netlify対応設定
-  trailingSlash: true,
-  output: 'export',
-  distDir: '.next',
+  trailingSlash: false,
   images: {
     unoptimized: true
   },
   
-  // ビルドID生成
-  generateBuildId: async () => {
-    return 'netlify-build-' + Date.now()
-  },
-
   // Firebase設定
   env: {
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'demo-key',
@@ -35,11 +28,6 @@ const nextConfig = {
   // 基本設定
   poweredByHeader: false,
   reactStrictMode: true,
-
-  // 実験的機能を削除（安定性重視）
-  // experimental: {
-  //   forceSwcTransforms: true,
-  // },
 
   // Webpack設定
   webpack: (config, { isServer, dev }) => {
