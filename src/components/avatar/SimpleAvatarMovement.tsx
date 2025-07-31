@@ -141,7 +141,7 @@ export default function SimpleAvatarMovement() {
         {/* 名前表示 */}
         <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1">
           <div className="bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-            {name}
+            {typeof name === 'string' ? name : 'ユーザー'}
           </div>
         </div>
         
@@ -177,7 +177,7 @@ export default function SimpleAvatarMovement() {
         position={position}
         direction={direction}
         isMoving={isMoving}
-        name={user.displayName || 'あなた'}
+        name={user?.displayName || 'あなた'}
       />
       
       {/* 操作ヒント */}

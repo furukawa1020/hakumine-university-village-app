@@ -25,3 +25,10 @@
 24 timing npm:load:setTitle Completed in 1ms
 25 timing npm:load:display Completed in 3ms
 26 verbose logfile logs-max:10 dir:C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app\.npm\_logs\2025-07-31T02_17_23_474Z-
+27 verbose logfile C:\Users\wakuw\OneDrive\画像\デスクトップ\hakumine-university-village-app\.npm\_logs\2025-07-31T02_17_23_474Z-debug-0.log
+28 timing npm:load:logFile Completed in 20ms
+29 timing npm:load:timers Completed in 0ms
+30 timing npm:load:configScope Completed in 0ms
+31 timing npm:load Completed in 122ms
+32 silly logfile start cleaning logs, removing 1 files
+33 silly logfile done cleaning log files
