@@ -37,6 +37,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@swc/core": "^1.7.26",
+    "@swc/helpers": "^0.5.13",
     "@types/leaflet": "^1.9.20",
     "@types/node": "^20",
     "@types/react": "^18.3.12",

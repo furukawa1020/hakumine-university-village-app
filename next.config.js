@@ -6,6 +6,12 @@ const nextConfig = {
     unoptimized: true
   },
   
+  // SWC設定
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production'
+  },
+  
   // Firebase設定
   env: {
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'demo-key',
