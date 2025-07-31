@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --debug",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rimraf .next out node_modules/.cache"
+    "clean": "rimraf .next out node_modules/.cache",
+    "build:clean": "npm run clean && next build"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.6",
@@ -27,6 +28,7 @@
     "react-dom": "19.1.0",
     "react-hook-form": "^7.61.1",
     "react-leaflet": "^5.0.0",
+    "rimraf": "^3.0.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^3.4.14",
     "typescript": "^5",
