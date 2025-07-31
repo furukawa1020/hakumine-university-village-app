@@ -1,5 +1,5 @@
 [build]
-  publish = ".next"
+  publish = "out"
   command = "npm install --legacy-peer-deps && npm run build"
 
 [build.environment]
