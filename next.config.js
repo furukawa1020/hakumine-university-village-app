@@ -72,19 +72,12 @@ const nextConfig = {
 
     // 外部パッケージの設定（Netlify対応）
     config.externals = config.externals || [];
-    
-    // Leaflet関連のSSR問題を回避
-    if (isServer) {
-      config.externals.push('leaflet', 'react-leaflet');
-    }
 
     return config
   },
 
   // 外部パッケージの transpilation 設定
-  transpilePackages: ['leaflet', 'react-leaflet'],
+  transpilePackages: [],
 }
-
-module.exports = nextConfig;
 
 module.exports = nextConfig;

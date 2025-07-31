@@ -278,35 +278,107 @@ export default function MapPage() {
         <CardHeader>
           <CardTitle>村の地図</CardTitle>
           <CardDescription>
-            白峰大学村の地図が表示されます。他の学生の位置も確認できます。
+            白峰大学村の地図です。あなたの位置と他の学生の位置が表示されます。
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-8 min-h-[400px] flex flex-col items-center justify-center text-center relative overflow-hidden">
-            {/* 背景の山のイメージ */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-green-200 to-transparent"></div>
-              <div className="absolute bottom-1/4 left-1/4 w-16 h-16 bg-green-300 rounded-full blur-xl"></div>
-              <div className="absolute bottom-1/3 right-1/4 w-20 h-20 bg-blue-300 rounded-full blur-xl"></div>
-            </div>
-            
-            <div className="relative z-10 space-y-4">
-              <AlertCircle className="h-16 w-16 text-blue-600 mx-auto" />
-              <h3 className="text-xl font-semibold text-gray-800">地図機能は準備中です</h3>
-              <p className="text-gray-600 max-w-md">
-                現在、より安定したマップ機能を開発中です。<br />
-                位置情報の取得と共有機能は利用できます。
-              </p>
+          <div className="relative bg-gradient-to-br from-green-100 via-blue-50 to-purple-50 rounded-lg min-h-[500px] overflow-hidden">
+            {/* 地図背景 */}
+            <div className="absolute inset-0">
+              {/* 山の背景 */}
+              <div className="absolute bottom-0 left-0 w-full h-2/3">
+                <svg viewBox="0 0 400 200" className="w-full h-full opacity-20">
+                  <polygon points="0,200 100,50 200,80 300,30 400,60 400,200" fill="#10b981" />
+                  <polygon points="0,200 80,100 160,120 240,80 320,100 400,90 400,200" fill="#059669" />
+                </svg>
+              </div>
               
+              {/* 建物・施設のマーカー */}
+              <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-lg">
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-red-500 text-white px-2 py-1 rounded whitespace-nowrap">
+                  白峰研修センター
+                </div>
+              </div>
+              <div className="absolute top-1/3 right-1/3 w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg">
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-blue-500 text-white px-2 py-1 rounded whitespace-nowrap">
+                  食堂
+                </div>
+              </div>
+              <div className="absolute bottom-1/3 left-1/3 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-lg">
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-green-500 text-white px-2 py-1 rounded whitespace-nowrap">
+                  図書館
+                </div>
+              </div>
+              <div className="absolute top-1/2 right-1/4 w-4 h-4 bg-yellow-500 rounded-full border-2 border-white shadow-lg">
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-yellow-500 text-white px-2 py-1 rounded whitespace-nowrap">
+                  体育館
+                </div>
+              </div>
+              
+              {/* グリッドライン */}
+              <svg className="absolute inset-0 w-full h-full opacity-10">
+                {Array.from({ length: 21 }, (_, i) => (
+                  <g key={i}>
+                    <line x1={`${i * 5}%`} y1="0%" x2={`${i * 5}%`} y2="100%" stroke="#64748b" strokeWidth="1" />
+                    <line x1="0%" y1={`${i * 5}%`} x2="100%" y2={`${i * 5}%`} stroke="#64748b" strokeWidth="1" />
+                  </g>
+                ))}
+              </svg>
+              
+              {/* 自分の位置マーカー */}
               {userLocation && (
-                <div className="mt-6 p-4 bg-white/80 rounded-lg backdrop-blur-sm">
-                  <p className="text-sm font-medium text-gray-700 mb-2">📍 あなたの現在位置</p>
-                  <p className="text-xs text-gray-600">
-                    {userLocation[0].toFixed(4)}, {userLocation[1].toFixed(4)}
-                  </p>
+                <div 
+                  className="absolute w-6 h-6 bg-blue-600 rounded-full border-4 border-white shadow-lg z-20 animate-pulse"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)'
+                  }}
+                >
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                    あなた
+                  </div>
                 </div>
               )}
+              
+              {/* 他のユーザーのサンプル */}
+              <div className="absolute top-1/4 right-1/2 w-5 h-5 bg-purple-500 rounded-full border-2 border-white shadow-lg">
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-purple-500 text-white px-1 py-0.5 rounded">
+                  田中
+                </div>
+              </div>
+              <div className="absolute bottom-1/4 left-2/3 w-5 h-5 bg-orange-500 rounded-full border-2 border-white shadow-lg">
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-orange-500 text-white px-1 py-0.5 rounded">
+                  佐藤
+                </div>
+              </div>
             </div>
+            
+            {/* 地図コントロール */}
+            <div className="absolute top-4 right-4 space-y-2 z-30">
+              <Button 
+                size="sm" 
+                variant="secondary"
+                className="bg-white/90 backdrop-blur-sm hover:bg-white/95"
+                onClick={() => {
+                  // 自分の位置に中央寄せ（将来の機能）
+                  console.log('自分の位置に移動');
+                }}
+              >
+                <MapPin className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            {/* 現在位置情報 */}
+            {userLocation && (
+              <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 text-sm z-30">
+                <p className="font-medium text-gray-700 mb-1">📍 現在位置</p>
+                <p className="text-xs text-gray-600">
+                  緯度: {userLocation[0].toFixed(6)}<br />
+                  経度: {userLocation[1].toFixed(6)}
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

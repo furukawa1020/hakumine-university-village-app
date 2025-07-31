@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
 
 interface Position {
@@ -113,54 +114,95 @@ export default function SimpleAvatarMovement() {
     direction: string;
     isMoving: boolean;
     name: string;
-  }) => (
-    <div
-      className={`
-        absolute w-12 h-12 transition-all duration-200 z-20
-        ${isMoving ? 'scale-110' : 'scale-100'}
-      `}
-      style={{
-        left: `${position.x}%`,
-        top: `${position.y}%`,
-        transform: 'translate(-50%, -50%)'
-      }}
-    >
-      <div className="relative">
-        {/* アバターアイコン */}
-        <div className={`
-          w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm
-          ${isMoving ? 'animate-bounce' : ''}
-          ${direction === 'up' ? 'bg-blue-500' : 
-            direction === 'down' ? 'bg-green-500' : 
-            direction === 'left' ? 'bg-yellow-500' : 
-            'bg-red-500'}
-        `}>
-          {name.charAt(0).toUpperCase()}
-        </div>
-        
-        {/* 名前表示 */}
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1">
-          <div className="bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-            {typeof name === 'string' ? name : 'ユーザー'}
-          </div>
-        </div>
-        
-        {/* 方向矢印 */}
-        <div className="absolute -top-2 -right-2">
+  }) => {
+    const getAvatarColor = () => {
+      if (userAvatar?.clothing) {
+        const colorMap: Record<string, string> = {
+          'blue': 'bg-blue-500',
+          'red': 'bg-red-500', 
+          'green': 'bg-green-500',
+          'yellow': 'bg-yellow-500',
+          'purple': 'bg-purple-500',
+          'orange': 'bg-orange-500'
+        };
+        return colorMap[userAvatar.clothing] || 'bg-blue-500';
+      }
+      
+      // 方向によるデフォルト色
+      return direction === 'up' ? 'bg-blue-500' : 
+             direction === 'down' ? 'bg-green-500' : 
+             direction === 'left' ? 'bg-yellow-500' : 
+             'bg-red-500';
+    };
+
+    const getAvatarInitials = () => {
+      if (userAvatar?.face === 'happy') return '😊';
+      if (userAvatar?.face === 'smile') return '😄';
+      if (userAvatar?.face === 'wink') return '😉';
+      if (userAvatar?.face === 'cool') return '😎';
+      if (userAvatar?.face === 'surprise') return '😮';
+      return name.charAt(0).toUpperCase();
+    };
+
+    return (
+      <div
+        className={`
+          absolute w-12 h-12 transition-all duration-200 z-20
+          ${isMoving ? 'scale-110' : 'scale-100'}
+        `}
+        style={{
+          left: `${position.x}%`,
+          top: `${position.y}%`,
+          transform: 'translate(-50%, -50%)'
+        }}
+      >
+        <div className="relative">
+          {/* アバターアイコン */}
           <div className={`
-            w-4 h-4 bg-white border-2 border-gray-800 rounded-full flex items-center justify-center
-            transform transition-transform duration-200
-            ${direction === 'up' ? 'rotate-0' : 
-              direction === 'right' ? 'rotate-90' : 
-              direction === 'down' ? 'rotate-180' : 
-              'rotate-270'}
+            w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm
+            ${isMoving ? 'animate-bounce' : ''}
+            ${getAvatarColor()}
+            border-2 border-white shadow-lg
           `}>
-            <div className="w-0 h-0 border-l-[3px] border-r-[3px] border-b-[4px] border-l-transparent border-r-transparent border-b-gray-800"></div>
+            <span className="text-lg">
+              {getAvatarInitials()}
+            </span>
+          </div>
+          
+          {/* アクセサリー表示 */}
+          {userAvatar?.accessory && userAvatar.accessory !== 'none' && (
+            <div className="absolute -top-1 -right-1">
+              {userAvatar.accessory === 'hat' && <span className="text-lg">🎩</span>}
+              {userAvatar.accessory === 'crown' && <span className="text-lg">👑</span>}
+              {userAvatar.accessory === 'glasses' && <span className="text-lg">👓</span>}
+              {userAvatar.accessory === 'earphones' && <span className="text-lg">🎧</span>}
+            </div>
+          )}
+          
+          {/* 名前表示 */}
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1">
+            <div className="bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+              {name}
+            </div>
+          </div>
+          
+          {/* 方向矢印 */}
+          <div className="absolute -top-2 -right-2">
+            <div className={`
+              w-4 h-4 bg-white border-2 border-gray-800 rounded-full flex items-center justify-center
+              transform transition-transform duration-200
+              ${direction === 'up' ? 'rotate-0' : 
+                direction === 'right' ? 'rotate-90' : 
+                direction === 'down' ? 'rotate-180' : 
+                'rotate-270'}
+            `}>
+              <div className="w-0 h-0 border-l-[3px] border-r-[3px] border-b-[4px] border-l-transparent border-r-transparent border-b-gray-800"></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   if (!user) {
     return (
@@ -177,16 +219,45 @@ export default function SimpleAvatarMovement() {
         position={position}
         direction={direction}
         isMoving={isMoving}
-        name={user?.displayName || 'あなた'}
+        name={user.displayName || 'あなた'}
       />
       
       {/* 操作ヒント */}
-      <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 text-xs">
-        <p className="font-medium mb-1">アバター操作:</p>
-        <p>矢印キー または WASD で移動</p>
-        <p className="text-gray-500 mt-1">
-          現在位置: ({position.x.toFixed(0)}, {position.y.toFixed(0)})
-        </p>
+      <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 text-xs space-y-2">
+        <div>
+          <p className="font-medium mb-1">アバター操作:</p>
+          <p>矢印キー または WASD で移動</p>
+          <p className="text-gray-500 mt-1">
+            現在位置: ({position.x.toFixed(0)}, {position.y.toFixed(0)})
+          </p>
+        </div>
+        
+        {userAvatar && (
+          <div className="border-t pt-2">
+            <p className="font-medium mb-1">アバター設定:</p>
+            <div className="flex items-center space-x-2">
+              <div className={`w-4 h-4 rounded-full ${
+                userAvatar.clothing === 'blue' ? 'bg-blue-500' :
+                userAvatar.clothing === 'red' ? 'bg-red-500' :
+                userAvatar.clothing === 'green' ? 'bg-green-500' :
+                userAvatar.clothing === 'yellow' ? 'bg-yellow-500' :
+                userAvatar.clothing === 'purple' ? 'bg-purple-500' :
+                userAvatar.clothing === 'orange' ? 'bg-orange-500' :
+                'bg-blue-500'
+              }`}></div>
+              <span className="text-xs">{userAvatar.clothing || 'blue'}</span>
+              {userAvatar.accessory && userAvatar.accessory !== 'none' && (
+                <>
+                  <span className="text-xs">+</span>
+                  <span className="text-xs">{userAvatar.accessory}</span>
+                </>
+              )}
+            </div>
+            <Link href="/settings/avatar" className="text-blue-600 hover:underline text-xs">
+              設定を変更
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
