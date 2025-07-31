@@ -282,103 +282,290 @@ export default function MapPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="relative bg-white rounded-lg min-h-[600px] overflow-hidden border border-gray-300 shadow-lg">
-            {/* 高品質地図背景 */}
+          <div className="relative bg-white rounded-lg min-h-[700px] overflow-hidden border border-gray-300 shadow-2xl">
+            {/* 超高品質地図背景 - Googleマップスタイル */}
             <div className="absolute inset-0">
-              {/* 地形の詳細レイヤー */}
-              <svg viewBox="0 0 800 600" className="w-full h-full">
-                {/* 地面の基本色 */}
-                <rect width="800" height="600" fill="#f0f9e8"/>
+              {/* 地形の超詳細レイヤー */}
+              <svg viewBox="0 0 1000 700" className="w-full h-full">
+                <defs>
+                  {/* 建物の影効果 */}
+                  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="2" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.3"/>
+                  </filter>
+                  
+                  {/* 道路のパターン */}
+                  <pattern id="asphalt" patternUnits="userSpaceOnUse" width="4" height="4">
+                    <rect width="4" height="4" fill="#4a4a4a"/>
+                    <circle cx="1" cy="1" r="0.3" fill="#5a5a5a"/>
+                    <circle cx="3" cy="3" r="0.3" fill="#5a5a5a"/>
+                  </pattern>
+                  
+                  {/* 草地のパターン */}
+                  <pattern id="grass" patternUnits="userSpaceOnUse" width="8" height="8">
+                    <rect width="8" height="8" fill="#7fb069"/>
+                    <path d="M1,6 Q2,4 3,6 Q4,4 5,6" stroke="#6b8e5a" strokeWidth="0.5" fill="none"/>
+                    <path d="M3,2 Q4,0 5,2 Q6,0 7,2" stroke="#6b8e5a" strokeWidth="0.5" fill="none"/>
+                  </pattern>
+                  
+                  {/* 水の波紋効果 */}
+                  <pattern id="water" patternUnits="userSpaceOnUse" width="20" height="10">
+                    <rect width="20" height="10" fill="#4a9eff"/>
+                    <path d="M0,5 Q5,3 10,5 T20,5" stroke="#3d8bdb" strokeWidth="0.8" fill="none" opacity="0.6"/>
+                    <path d="M0,7 Q5,5 10,7 T20,7" stroke="#6bb6ff" strokeWidth="0.5" fill="none" opacity="0.4"/>
+                  </pattern>
+                </defs>
                 
-                {/* 山岳地帯 */}
-                <polygon points="0,400 150,200 300,250 450,150 600,200 800,180 800,600 0,600" fill="#d4e6b7" />
-                <polygon points="100,500 250,300 400,350 550,250 700,300 800,280 800,600 100,600" fill="#c9e0a8" />
-                <polygon points="200,600 350,400 500,450 650,350 800,380 800,600 200,600" fill="#bdd999" />
+                {/* 基本地面 - 自然な色合い */}
+                <rect width="1000" height="700" fill="#f4f5f0"/>
                 
-                {/* 森林エリア */}
-                {Array.from({ length: 120 }, (_, i) => {
-                  const x = (i % 40) * 20 + Math.random() * 15;
-                  const y = 200 + Math.floor(i / 40) * 60 + Math.random() * 40;
-                  const size = 4 + Math.random() * 6;
-                  return (
-                    <circle key={`tree-${i}`} cx={x} cy={y} r={size} fill="#228b22" opacity="0.8"/>
-                  );
-                })}
+                {/* 地形の詳細な層構造 */}
+                <g id="terrain">
+                  {/* 遠山の層 */}
+                  <polygon points="0,350 120,180 280,220 450,160 620,200 800,170 1000,160 1000,700 0,700" fill="#c8d5b9" opacity="0.8"/>
+                  <polygon points="100,450 220,280 380,320 550,260 720,300 900,270 1000,260 1000,700 100,700" fill="#b8c7a9" opacity="0.9"/>
+                  <polygon points="200,550 320,380 480,420 650,360 820,400 1000,380 1000,700 200,700" fill="#a8b799"/>
+                  
+                  {/* 近景の丘陵 */}
+                  <polygon points="0,500 150,420 300,450 450,400 600,440 750,410 900,450 1000,430 1000,700 0,700" fill="#9cb088"/>
+                  <polygon points="50,600 200,520 350,550 500,500 650,540 800,510 950,550 1000,530 1000,700 50,700" fill="#8ca078"/>
+                </g>
                 
-                {/* 川・水系 */}
-                <path d="M0,350 Q200,340 400,360 T800,340" stroke="#4a90e2" strokeWidth="12" fill="none" opacity="0.8"/>
-                <path d="M200,500 Q400,490 600,500" stroke="#4a90e2" strokeWidth="8" fill="none" opacity="0.6"/>
+                {/* 詳細な森林エリア */}
+                <g id="forest">
+                  {/* 大きな森林ブロック */}
+                  <ellipse cx="200" cy="300" rx="80" ry="60" fill="url(#grass)" opacity="0.9"/>
+                  <ellipse cx="600" cy="250" rx="100" ry="70" fill="url(#grass)" opacity="0.9"/>
+                  <ellipse cx="800" cy="400" rx="90" ry="65" fill="url(#grass)" opacity="0.9"/>
+                  
+                  {/* 個別の木々 - より現実的な配置 */}
+                  {Array.from({ length: 200 }, (_, i) => {
+                    const clusters = [
+                      { centerX: 200, centerY: 300, radius: 80 },
+                      { centerX: 600, centerY: 250, radius: 100 },
+                      { centerX: 800, centerY: 400, radius: 90 },
+                      { centerX: 150, centerY: 500, radius: 60 },
+                      { centerX: 750, centerY: 350, radius: 70 }
+                    ];
+                    const cluster = clusters[i % clusters.length];
+                    const angle = (i / clusters.length) * 2 * Math.PI + Math.random() * Math.PI;
+                    const distance = Math.random() * cluster.radius;
+                    const x = cluster.centerX + Math.cos(angle) * distance;
+                    const y = cluster.centerY + Math.sin(angle) * distance;
+                    const size = 3 + Math.random() * 8;
+                    const treeType = Math.random();
+                    
+                    if (treeType < 0.6) {
+                      // 針葉樹
+                      return (
+                        <g key={`tree-${i}`}>
+                          <polygon points={`${x},${y} ${x-size/2},${y+size} ${x+size/2},${y+size}`} fill="#2d5016"/>
+                          <polygon points={`${x},${y-size/3} ${x-size/3},${y+size/2} ${x+size/3},${y+size/2}`} fill="#3d6026"/>
+                          <rect x={x-1} y={y+size-2} width="2" height="4" fill="#654321"/>
+                        </g>
+                      );
+                    } else {
+                      // 広葉樹
+                      return (
+                        <g key={`tree-${i}`}>
+                          <circle cx={x} cy={y} r={size} fill="#228b22" opacity="0.9"/>
+                          <circle cx={x-size/3} cy={y-size/4} r={size*0.7} fill="#32cd32" opacity="0.7"/>
+                          <circle cx={x+size/4} cy={y-size/3} r={size*0.6} fill="#90ee90" opacity="0.6"/>
+                          <rect x={x-1.5} y={y+size-3} width="3" height="6" fill="#8b4513"/>
+                        </g>
+                      );
+                    }
+                  })}
+                </g>
                 
-                {/* 主要道路 */}
-                <path d="M0,450 Q200,440 400,450 T800,430" stroke="#666" strokeWidth="8" fill="none"/>
-                <path d="M300,0 Q320,200 340,400 T360,600" stroke="#666" strokeWidth="6" fill="none"/>
-                <path d="M500,0 Q520,200 540,400 T560,600" stroke="#666" strokeWidth="6" fill="none"/>
+                {/* 川・水系システム */}
+                <g id="waterways">
+                  {/* メイン河川 */}
+                  <path d="M0,320 Q150,310 300,330 Q450,350 600,340 Q750,330 900,350 L1000,345" 
+                        fill="url(#water)" stroke="none" strokeWidth="20"/>
+                  <path d="M0,320 Q150,310 300,330 Q450,350 600,340 Q750,330 900,350 L1000,345" 
+                        stroke="#2e86ab" strokeWidth="16" fill="none" opacity="0.8"/>
+                  <path d="M0,320 Q150,310 300,330 Q450,350 600,340 Q750,330 900,350 L1000,345" 
+                        stroke="#a8dadc" strokeWidth="8" fill="none" opacity="0.6"/>
+                  
+                  {/* 支流 */}
+                  <path d="M200,280 Q250,290 300,300 Q350,310 400,320" 
+                        stroke="#4a9eff" strokeWidth="8" fill="none" opacity="0.7"/>
+                  <path d="M500,380 Q550,370 600,380 Q650,390 700,380" 
+                        stroke="#4a9eff" strokeWidth="6" fill="none" opacity="0.7"/>
+                  
+                  {/* 小川 */}
+                  <path d="M150,450 Q200,440 250,450 Q300,460 350,450" 
+                        stroke="#87ceeb" strokeWidth="3" fill="none" opacity="0.8"/>
+                  <path d="M600,500 Q650,490 700,500 Q750,510 800,500" 
+                        stroke="#87ceeb" strokeWidth="3" fill="none" opacity="0.8"/>
+                </g>
                 
-                {/* 道路の中央線 */}
-                <path d="M0,450 Q200,440 400,450 T800,430" stroke="#fff" strokeWidth="2" fill="none" strokeDasharray="10,5"/>
-                <path d="M300,0 Q320,200 340,400 T360,600" stroke="#fff" strokeWidth="1" fill="none" strokeDasharray="8,4"/>
-                <path d="M500,0 Q520,200 540,400 T560,600" stroke="#fff" strokeWidth="1" fill="none" strokeDasharray="8,4"/>
+                {/* 高速道路・主要道路システム */}
+                <g id="highways">
+                  {/* 高速道路 */}
+                  <path d="M0,420 Q200,410 400,420 Q600,430 800,420 L1000,415" 
+                        stroke="#2c2c2c" strokeWidth="20" fill="none"/>
+                  <path d="M0,420 Q200,410 400,420 Q600,430 800,420 L1000,415" 
+                        stroke="url(#asphalt)" strokeWidth="16" fill="none"/>
+                  <path d="M0,420 Q200,410 400,420 Q600,430 800,420 L1000,415" 
+                        stroke="#ffffff" strokeWidth="3" fill="none" strokeDasharray="15,10"/>
+                  
+                  {/* 縦の主要道路 */}
+                  <path d="M250,0 Q270,150 290,300 Q310,450 330,600 L340,700" 
+                        stroke="#2c2c2c" strokeWidth="16" fill="none"/>
+                  <path d="M250,0 Q270,150 290,300 Q310,450 330,600 L340,700" 
+                        stroke="url(#asphalt)" strokeWidth="12" fill="none"/>
+                  <path d="M250,0 Q270,150 290,300 Q310,450 330,600 L340,700" 
+                        stroke="#ffffff" strokeWidth="2" fill="none" strokeDasharray="10,8"/>
+                  
+                  <path d="M600,0 Q620,150 640,300 Q660,450 680,600 L690,700" 
+                        stroke="#2c2c2c" strokeWidth="16" fill="none"/>
+                  <path d="M600,0 Q620,150 640,300 Q660,450 680,600 L690,700" 
+                        stroke="url(#asphalt)" strokeWidth="12" fill="none"/>
+                  <path d="M600,0 Q620,150 640,300 Q660,450 680,600 L690,700" 
+                        stroke="#ffffff" strokeWidth="2" fill="none" strokeDasharray="10,8"/>
+                </g>
                 
-                {/* 建物群 */}
-                {/* 白峰研修センター */}
-                <rect x="150" y="280" width="80" height="60" fill="#dc3545" stroke="#000" strokeWidth="1"/>
-                <rect x="160" y="270" width="60" height="10" fill="#8b0000"/>
-                <rect x="170" y="290" width="15" height="20" fill="#654321"/>
-                <rect x="200" y="290" width="15" height="15" fill="#87ceeb"/>
-                <rect x="220" y="295" width="8" height="10" fill="#87ceeb"/>
-                
-                {/* 食堂 */}
-                <rect x="480" y="200" width="60" height="50" fill="#007bff" stroke="#000" strokeWidth="1"/>
-                <rect x="490" y="190" width="40" height="10" fill="#000080"/>
-                <rect x="500" y="210" width="12" height="15" fill="#654321"/>
-                <rect x="520" y="210" width="10" height="10" fill="#87ceeb"/>
-                
-                {/* 図書館 */}
-                <rect x="250" y="380" width="70" height="55" fill="#28a745" stroke="#000" strokeWidth="1"/>
-                <rect x="260" y="370" width="50" height="10" fill="#006400"/>
-                <rect x="270" y="395" width="12" height="18" fill="#654321"/>
-                <rect x="295" y="395" width="8" height="8" fill="#87ceeb"/>
-                <rect x="310" y="395" width="8" height="8" fill="#87ceeb"/>
-                
-                {/* 体育館 */}
-                <rect x="580" y="320" width="90" height="70" fill="#ffc107" stroke="#000" strokeWidth="1"/>
-                <rect x="590" y="310" width="70" height="10" fill="#ff8c00"/>
-                <rect x="600" y="340" width="15" height="25" fill="#654321"/>
-                <rect x="630" y="340" width="12" height="15" fill="#87ceeb"/>
-                <rect x="650" y="340" width="12" height="15" fill="#87ceeb"/>
-                
-                {/* 宿舎群 */}
-                {Array.from({ length: 8 }, (_, i) => {
-                  const x = 100 + (i % 4) * 70;
-                  const y = 500 + Math.floor(i / 4) * 40;
-                  return (
-                    <g key={`dorm-${i}`}>
-                      <rect x={x} y={y} width="40" height="30" fill="#9370db" stroke="#000" strokeWidth="1"/>
-                      <rect x={x + 5} y={y - 8} width="30" height="8" fill="#4b0082"/>
-                      <rect x={x + 15} y={y + 8} width="8" height="12" fill="#654321"/>
-                      <rect x={x + 28} y={y + 8} width="6" height="6" fill="#87ceeb"/>
-                    </g>
-                  );
-                })}
-                
-                {/* グリッド（座標系） */}
-                {Array.from({ length: 17 }, (_, i) => (
-                  <g key={`grid-${i}`} opacity="0.1">
-                    <line x1={i * 50} y1="0" x2={i * 50} y2="600" stroke="#000" strokeWidth="0.5"/>
-                    <line x1="0" y1={i * 50} x2="800" y2={i * 50} stroke="#000" strokeWidth="0.5"/>
+                {/* 詳細な建物群 */}
+                <g id="buildings" filter="url(#shadow)">
+                  {/* 白峰研修センター - 大型複合建築 */}
+                  <g id="research-center">
+                    <rect x="180" y="250" width="120" height="80" fill="#dc3545" stroke="#8b0000" strokeWidth="2"/>
+                    <rect x="190" y="240" width="100" height="12" fill="#8b0000"/>
+                    <rect x="200" y="270" width="20" height="30" fill="#654321"/>
+                    <rect x="230" y="270" width="25" height="20" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="265" y="270" width="25" height="20" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="240" y="300" width="15" height="12" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="270" y="300" width="15" height="12" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <text x="240" y="285" fontSize="8" fill="#ffffff" fontWeight="bold">研修センター</text>
                   </g>
-                ))}
+                  
+                  {/* 食堂 - モダンな建物 */}
+                  <g id="cafeteria">
+                    <rect x="580" y="180" width="80" height="60" fill="#007bff" stroke="#0056b3" strokeWidth="2"/>
+                    <rect x="590" y="170" width="60" height="10" fill="#0056b3"/>
+                    <rect x="600" y="200" width="15" height="20" fill="#654321"/>
+                    <rect x="625" y="200" width="12" height="12" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="645" y="200" width="12" height="12" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="605" y="220" width="8" height="8" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="620" y="220" width="8" height="8" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="635" y="220" width="8" height="8" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <text x="610" y="210" fontSize="6" fill="#ffffff" fontWeight="bold">食堂</text>
+                  </g>
+                  
+                  {/* 図書館 - 学術的な建物 */}
+                  <g id="library">
+                    <rect x="300" y="450" width="100" height="70" fill="#28a745" stroke="#1e7e34" strokeWidth="2"/>
+                    <rect x="310" y="440" width="80" height="10" fill="#1e7e34"/>
+                    <rect x="320" y="470" width="18" height="25" fill="#654321"/>
+                    <rect x="350" y="470" width="15" height="15" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="375" y="470" width="15" height="15" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="350" y="495" width="15" height="15" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="375" y="495" width="15" height="15" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <text x="330" y="485" fontSize="6" fill="#ffffff" fontWeight="bold">図書館</text>
+                  </g>
+                  
+                  {/* 体育館 - 大型アリーナ */}
+                  <g id="gymnasium">
+                    <rect x="700" y="300" width="140" height="90" fill="#ffc107" stroke="#e0a800" strokeWidth="2"/>
+                    <rect x="710" y="290" width="120" height="10" fill="#e0a800"/>
+                    <rect x="730" y="330" width="20" height="30" fill="#654321"/>
+                    <rect x="760" y="330" width="18" height="18" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="790" y="330" width="18" height="18" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="820" y="330" width="18" height="18" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="760" y="360" width="18" height="18" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="790" y="360" width="18" height="18" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <rect x="820" y="360" width="18" height="18" fill="#87ceeb" stroke="#4682b4" strokeWidth="1"/>
+                    <text x="750" y="350" fontSize="8" fill="#000000" fontWeight="bold">体育館</text>
+                  </g>
+                  
+                  {/* 宿舎群 - 統一されたデザイン */}
+                  {Array.from({ length: 12 }, (_, i) => {
+                    const row = Math.floor(i / 4);
+                    const col = i % 4;
+                    const x = 100 + col * 80;
+                    const y = 550 + row * 50;
+                    return (
+                      <g key={`dorm-${i}`}>
+                        <rect x={x} y={y} width="60" height="40" fill="#9370db" stroke="#663399" strokeWidth="1"/>
+                        <rect x={x + 10} y={y - 8} width="40" height="8" fill="#663399"/>
+                        <rect x={x + 20} y={y + 10} width="12" height="15" fill="#654321"/>
+                        <rect x={x + 40} y={y + 10} width="8" height="8" fill="#87ceeb" stroke="#4682b4" strokeWidth="0.5"/>
+                        <rect x={x + 40} y={y + 20} width="8" height="8" fill="#87ceeb" stroke="#4682b4" strokeWidth="0.5"/>
+                        <rect x={x + 10} y={y + 10} width="6" height="6" fill="#87ceeb" stroke="#4682b4" strokeWidth="0.5"/>
+                        <rect x={x + 10} y={y + 20} width="6" height="6" fill="#87ceeb" stroke="#4682b4" strokeWidth="0.5"/>
+                        <text x={x + 25} y={y + 20} fontSize="5" fill="#ffffff" fontWeight="bold">宿舎{i + 1}</text>
+                      </g>
+                    );
+                  })}
+                </g>
                 
-                {/* 等高線 */}
-                <path d="M50,300 Q200,290 350,300 T650,290" stroke="#8b4513" strokeWidth="1" fill="none" opacity="0.3"/>
-                <path d="M80,250 Q230,240 380,250 T680,240" stroke="#8b4513" strokeWidth="1" fill="none" opacity="0.3"/>
-                <path d="M120,200 Q270,190 420,200 T720,190" stroke="#8b4513" strokeWidth="1" fill="none" opacity="0.3"/>
+                {/* 精密グリッド（Google Maps風） */}
+                <g id="grid" opacity="0.15">
+                  {Array.from({ length: 21 }, (_, i) => (
+                    <g key={`major-grid-${i}`}>
+                      <line x1={i * 50} y1="0" x2={i * 50} y2="700" stroke="#000000" strokeWidth="0.8"/>
+                      <line x1="0" y1={i * 35} x2="1000" y2={i * 35} stroke="#000000" strokeWidth="0.8"/>
+                    </g>
+                  ))}
+                  {Array.from({ length: 41 }, (_, i) => (
+                    <g key={`minor-grid-${i}`}>
+                      <line x1={i * 25} y1="0" x2={i * 25} y2="700" stroke="#666666" strokeWidth="0.3"/>
+                      <line x1="0" y1={i * 17.5} x2="1000" y2={i * 17.5} stroke="#666666" strokeWidth="0.3"/>
+                    </g>
+                  ))}
+                </g>
+                
+                {/* 等高線（詳細） */}
+                <g id="contours" opacity="0.4">
+                  <path d="M50,250 Q200,240 350,250 Q500,260 650,250 Q800,240 950,250" 
+                        stroke="#8b4513" strokeWidth="1.5" fill="none"/>
+                  <path d="M80,200 Q230,190 380,200 Q530,210 680,200 Q830,190 980,200" 
+                        stroke="#8b4513" strokeWidth="1.5" fill="none"/>
+                  <path d="M120,150 Q270,140 420,150 Q570,160 720,150 Q870,140 1000,150" 
+                        stroke="#8b4513" strokeWidth="1.5" fill="none"/>
+                  <path d="M20,300 Q170,290 320,300 Q470,310 620,300 Q770,290 920,300" 
+                        stroke="#8b4513" strokeWidth="1" fill="none"/>
+                  <path d="M60,350 Q210,340 360,350 Q510,360 660,350 Q810,340 960,350" 
+                        stroke="#8b4513" strokeWidth="1" fill="none"/>
+                </g>
+                
+                {/* 道路標識・交通システム */}
+                <g id="road-signs">
+                  {/* 信号機 */}
+                  <rect x="290" y="400" width="4" height="15" fill="#333"/>
+                  <circle cx="292" cy="405" r="2" fill="#ff0000"/>
+                  <circle cx="292" cy="409" r="2" fill="#ffff00"/>
+                  <circle cx="292" cy="413" r="2" fill="#00ff00"/>
+                  
+                  <rect x="640" y="400" width="4" height="15" fill="#333"/>
+                  <circle cx="642" cy="405" r="2" fill="#ff0000"/>
+                  <circle cx="642" cy="409" r="2" fill="#ffff00"/>
+                  <circle cx="642" cy="413" r="2" fill="#00ff00"/>
+                  
+                  {/* 道路標識 */}
+                  <rect x="200" y="380" width="20" height="15" fill="#ffffff" stroke="#000" strokeWidth="1"/>
+                  <text x="210" y="390" fontSize="4" fill="#000" textAnchor="middle">白峰村</text>
+                  
+                  <rect x="500" y="360" width="25" height="12" fill="#009900" stroke="#000" strokeWidth="1"/>
+                  <text x="512" y="368" fontSize="4" fill="#ffffff" textAnchor="middle">研修センター</text>
+                </g>
+                
+                {/* パーキングエリア */}
+                <g id="parking">
+                  <rect x="320" y="280" width="40" height="30" fill="#cccccc" stroke="#999" strokeWidth="1"/>
+                  <text x="340" y="300" fontSize="6" fill="#000" textAnchor="middle">P</text>
+                  {Array.from({ length: 8 }, (_, i) => (
+                    <rect key={`parking-${i}`} x={325 + (i % 4) * 8} y={285 + Math.floor(i / 4) * 10} 
+                          width="6" height="8" fill="none" stroke="#999" strokeWidth="0.5"/>
+                  ))}
+                </g>
               </svg>
               
-              {/* 自分の位置マーカー */}
+              {/* 自分の位置マーカー（より精密） */}
               {userLocation && (
                 <div 
-                  className="absolute w-10 h-10 z-30"
+                  className="absolute w-12 h-12 z-30"
                   style={{
                     left: '50%',
                     top: '50%',
@@ -386,123 +573,168 @@ export default function MapPage() {
                   }}
                 >
                   <div className="relative">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full border-4 border-white shadow-xl flex items-center justify-center animate-pulse">
-                      <div className="w-4 h-4 bg-white rounded-full"></div>
+                    <div className="w-12 h-12 bg-blue-600 rounded-full border-4 border-white shadow-2xl flex items-center justify-center animate-pulse">
+                      <div className="w-5 h-5 bg-white rounded-full shadow-inner"></div>
                     </div>
-                    <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap font-medium shadow-lg">
-                      📍 あなたの位置
+                    <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap font-medium shadow-xl border border-blue-500">
+                      📍 あなたの現在位置
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-600"></div>
                     </div>
-                    {/* GPS精度の円 */}
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 border-2 border-blue-400 rounded-full opacity-30 animate-ping"></div>
+                    {/* GPS精度の複数円 */}
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-blue-400 rounded-full opacity-20 animate-ping"></div>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-36 h-36 border border-blue-300 rounded-full opacity-10 animate-pulse"></div>
                   </div>
                 </div>
               )}
               
-              {/* 他のユーザー */}
-              <div className="absolute top-1/4 right-1/2 w-8 h-8 bg-purple-500 rounded-full border-3 border-white shadow-lg flex items-center justify-center z-20">
-                <span className="text-white text-xs font-bold">田</span>
-                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-xs bg-purple-500 text-white px-2 py-1 rounded-full shadow">
-                  田中
+              {/* 他のユーザー（より詳細） */}
+              <div className="absolute top-1/4 right-1/2 w-10 h-10 bg-purple-500 rounded-full border-3 border-white shadow-xl flex items-center justify-center z-20">
+                <span className="text-white text-sm font-bold">田</span>
+                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-xs bg-purple-500 text-white px-2 py-1 rounded-lg shadow-lg">
+                  田中さん
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-t-3 border-l-transparent border-r-transparent border-t-purple-500"></div>
                 </div>
               </div>
-              <div className="absolute bottom-1/4 left-2/3 w-8 h-8 bg-orange-500 rounded-full border-3 border-white shadow-lg flex items-center justify-center z-20">
-                <span className="text-white text-xs font-bold">佐</span>
-                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-xs bg-orange-500 text-white px-2 py-1 rounded-full shadow">
-                  佐藤
+              <div className="absolute bottom-1/4 left-2/3 w-10 h-10 bg-orange-500 rounded-full border-3 border-white shadow-xl flex items-center justify-center z-20">
+                <span className="text-white text-sm font-bold">佐</span>
+                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-xs bg-orange-500 text-white px-2 py-1 rounded-lg shadow-lg">
+                  佐藤さん
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-t-3 border-l-transparent border-r-transparent border-t-orange-500"></div>
                 </div>
               </div>
             </div>
             
-            {/* 地図コントロール */}
-            <div className="absolute top-4 right-4 space-y-2 z-40">
-              <Button 
-                size="sm" 
-                variant="secondary"
-                className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-xl border"
-                onClick={() => {
-                  console.log('現在位置に移動');
-                  alert('現在位置へ移動機能（実装予定）');
-                }}
-              >
-                <MapPin className="h-4 w-4" />
-              </Button>
-              <Button 
-                size="sm" 
-                variant="secondary"
-                className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-xl border"
-                onClick={() => alert('ズーム機能（実装予定）')}
-              >
-                +
-              </Button>
-              <Button 
-                size="sm" 
-                variant="secondary"
-                className="bg-white/95 backdrop-blur-sm hover:bg-white shadow-xl border"
-                onClick={() => alert('ズームアウト機能（実装予定）')}
-              >
-                -
-              </Button>
+            {/* 地図コントロール（Googleマップ風） */}
+            <div className="absolute top-4 right-4 space-y-1 z-40">
+              <div className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden">
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  className="w-10 h-10 p-0 rounded-none border-b border-gray-200 hover:bg-gray-50"
+                  onClick={() => {
+                    console.log('現在位置に移動');
+                    alert('現在位置へ移動機能（実装予定）');
+                  }}
+                >
+                  <MapPin className="h-4 w-4 text-gray-700" />
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  className="w-10 h-10 p-0 rounded-none border-b border-gray-200 hover:bg-gray-50 font-bold text-lg"
+                  onClick={() => alert('ズーム機能（実装予定）')}
+                >
+                  +
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  className="w-10 h-10 p-0 rounded-none hover:bg-gray-50 font-bold text-lg"
+                  onClick={() => alert('ズームアウト機能（実装予定）')}
+                >
+                  -
+                </Button>
+              </div>
+              
+              {/* 地図種別切り替え */}
+              <div className="bg-white rounded-lg shadow-2xl border border-gray-200 p-2 space-y-1">
+                <button className="block w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">地図</button>
+                <button className="block w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">航空写真</button>
+                <button className="block w-full text-left px-2 py-1 text-xs hover:bg-gray-50 rounded">地形</button>
+              </div>
             </div>
             
-            {/* 地図の凡例 */}
-            <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg p-4 text-xs z-40 shadow-xl border space-y-2">
-              <p className="font-bold mb-3 text-gray-800">🗺️ 地図凡例</p>
+            {/* 詳細な凡例（Googleマップ風） */}
+            <div className="absolute top-4 left-4 bg-white rounded-lg p-4 text-xs z-40 shadow-2xl border border-gray-200 max-w-48">
+              <p className="font-bold mb-3 text-gray-800 border-b border-gray-200 pb-2">🗺️ 地図凡例</p>
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-blue-600 rounded-full shadow"></div>
+                  <div className="w-4 h-4 bg-blue-600 rounded-full shadow-sm"></div>
                   <span className="text-gray-700">あなたの位置</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-red-500 rounded shadow"></div>
+                  <div className="w-4 h-4 bg-red-500 rounded shadow-sm"></div>
                   <span className="text-gray-700">研修センター</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-blue-500 rounded shadow"></div>
+                  <div className="w-4 h-4 bg-blue-500 rounded shadow-sm"></div>
                   <span className="text-gray-700">食堂</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-green-500 rounded shadow"></div>
+                  <div className="w-4 h-4 bg-green-500 rounded shadow-sm"></div>
                   <span className="text-gray-700">図書館</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-yellow-500 rounded shadow"></div>
+                  <div className="w-4 h-4 bg-yellow-500 rounded shadow-sm"></div>
                   <span className="text-gray-700">体育館</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-purple-500 rounded shadow"></div>
+                  <div className="w-4 h-4 bg-purple-500 rounded shadow-sm"></div>
                   <span className="text-gray-700">宿舎</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-2 bg-gray-600 rounded shadow"></div>
-                  <span className="text-gray-700">道路</span>
+                  <div className="w-4 h-2 bg-gray-700 rounded shadow-sm"></div>
+                  <span className="text-gray-700">主要道路</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-2 bg-blue-400 rounded shadow"></div>
-                  <span className="text-gray-700">川</span>
+                  <div className="w-4 h-2 bg-blue-400 rounded shadow-sm"></div>
+                  <span className="text-gray-700">河川</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-green-400 rounded-full shadow-sm"></div>
+                  <span className="text-gray-700">森林・公園</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-gray-300 rounded shadow-sm"></div>
+                  <span className="text-gray-700">駐車場</span>
                 </div>
               </div>
             </div>
             
-            {/* 位置情報パネル */}
+            {/* 位置情報パネル（より詳細） */}
             {userLocation && (
-              <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg p-4 text-sm z-40 shadow-xl border">
-                <p className="font-bold text-gray-800 mb-2">📍 位置情報</p>
-                <div className="space-y-1 text-xs text-gray-600">
-                  <p>緯度: {userLocation[0].toFixed(6)}</p>
-                  <p>経度: {userLocation[1].toFixed(6)}</p>
-                  <p className={`font-medium ${locationPermission === 'granted' ? 'text-green-600' : 'text-red-600'}`}>
+              <div className="absolute bottom-4 left-4 bg-white rounded-lg p-4 text-sm z-40 shadow-2xl border border-gray-200">
+                <p className="font-bold text-gray-800 mb-3 border-b border-gray-200 pb-2">📍 位置情報詳細</p>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div>
+                    <span className="font-medium">緯度:</span> {userLocation[0].toFixed(6)}
+                  </div>
+                  <div>
+                    <span className="font-medium">経度:</span> {userLocation[1].toFixed(6)}
+                  </div>
+                  <div className={`font-medium ${locationPermission === 'granted' ? 'text-green-600' : 'text-red-600'}`}>
                     {locationPermission === 'granted' ? '✅ GPS有効' : '❌ GPS無効'}
-                  </p>
-                  <p className="text-gray-500">精度: ±10m</p>
+                  </div>
+                  <div className="text-gray-500">
+                    <span className="font-medium">精度:</span> ±10m
+                  </div>
+                  <div className="text-gray-500">
+                    <span className="font-medium">標高:</span> 約650m
+                  </div>
+                  <div className="text-gray-500">
+                    <span className="font-medium">座標系:</span> WGS84
+                  </div>
                 </div>
               </div>
             )}
             
-            {/* スケール表示 */}
-            <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg p-2 text-xs z-40 shadow-xl border">
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-1 bg-black"></div>
-                <span className="text-gray-700">100m</span>
+            {/* スケール表示（より詳細） */}
+            <div className="absolute bottom-4 right-4 bg-white rounded-lg p-3 text-xs z-40 shadow-2xl border border-gray-200">
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <div className="w-16 h-1 bg-black"></div>
+                  <span className="text-gray-700 font-medium">100m</span>
+                </div>
+                <div className="text-gray-500 text-center">1:2000</div>
+              </div>
+            </div>
+            
+            {/* 方位コンパス */}
+            <div className="absolute top-20 right-4 w-12 h-12 bg-white rounded-full shadow-2xl border border-gray-200 z-40 flex items-center justify-center">
+              <div className="relative w-8 h-8">
+                <div className="absolute inset-0 rounded-full border border-gray-300"></div>
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-b-4 border-l-transparent border-r-transparent border-b-red-500"></div>
+                <div className="absolute top-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-red-500">N</div>
               </div>
             </div>
           </div>
