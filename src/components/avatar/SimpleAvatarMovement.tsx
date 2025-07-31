@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
-import { PixelAvatarRenderer } from './PixelAvatarRenderer';
+import { PixelAvatar } from './PixelAvatar';
 
 interface Position {
   x: number;
@@ -135,10 +135,20 @@ export default function SimpleAvatarMovement() {
             shadow-lg rounded-lg bg-white/10 backdrop-blur-sm p-1
           `}>
             {userAvatar ? (
-              <PixelAvatarRenderer 
-                config={userAvatar}
+              <PixelAvatar 
+                style={{
+                  skinColor: 'light',
+                  hairStyle: 'short',
+                  hairColor: 'brown',
+                  clothing: 'tshirt',
+                  accessory: 'none',
+                  face: 'happy',
+                  background: 'none'
+                }}
                 size={48}
                 direction={direction}
+                isMoving={isMoving}
+                showName={name}
               />
             ) : (
               <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold border-2 border-white">

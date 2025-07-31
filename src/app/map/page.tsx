@@ -17,41 +17,27 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
-import SimpleAvatarMovement from '@/components/avatar/SimpleAvatarMovement';
 
 // 白峰エリアの座標（石川県白山市白峰）
 const HAKUMINE_CENTER = [36.2547, 136.6342];
 
+// 地図の境界（白峰村エリア）
+const MAP_BOUNDS = {
+  north: 36.270,  // 北端
+  south: 36.240,  // 南端
+  east: 136.650,  // 東端
+  west: 136.620   // 西端
+};
+
+// 座標を地図上のピクセル位置に変換
+const latLngToPixel = (lat: number, lng: number) => {
+  const x = ((lng - MAP_BOUNDS.west) / (MAP_BOUNDS.east - MAP_BOUNDS.west)) * 1000;
+  const y = ((MAP_BOUNDS.north - lat) / (MAP_BOUNDS.north - MAP_BOUNDS.south)) * 700;
+  return { x: Math.max(0, Math.min(1000, x)), y: Math.max(0, Math.min(700, y)) };
+};
+
 // 位置情報追跡
 let watchId: number | null = null;
-
-const startLocationTracking = () => {
-  if (typeof window === 'undefined' || !navigator.geolocation) return;
-
-  const options = {
-    enableHighAccuracy: true,
-    timeout: 10000,
-    maximumAge: 60000 // 1分
-  };
-
-  watchId = navigator.geolocation.watchPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-      console.log('位置情報更新:', { latitude, longitude, accuracy: position.coords.accuracy });
-    },
-    (error) => {
-      console.error('位置情報追跡エラー:', error);
-    },
-    options
-  );
-
-  return () => {
-    if (watchId !== null) {
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
-    }
-  };
-};
 
 export default function MapPage() {
   const { user } = useAuthStore();
@@ -60,6 +46,46 @@ export default function MapPage() {
   const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'pending'>('pending');
   const [onlineUsers] = useState<any[]>([]); // 実際のユーザーデータは今後Firebase等から取得
   const [isLoading, setIsLoading] = useState(true);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+
+  // 位置情報追跡関数をコンポーネント内に移動
+  const startLocationTracking = () => {
+    if (typeof window === 'undefined' || !navigator.geolocation) return;
+
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 60000 // 1分
+    };
+
+    watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude, accuracy } = position.coords;
+        console.log('位置情報更新:', { latitude, longitude, accuracy });
+        
+        // 状態を更新（リアルタイム追跡）
+        setUserLocation([latitude, longitude]);
+        setGpsAccuracy(accuracy);
+        
+        // 精度情報も更新
+        if (accuracy && accuracy < 50) {
+          console.log('高精度GPS取得:', accuracy + 'm');
+        }
+      },
+      (error) => {
+        console.error('位置情報追跡エラー:', error);
+        // エラー時も継続して追跡を試行
+      },
+      options
+    );
+
+    return () => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+    };
+  };
 
   useEffect(() => {
     // ブラウザ環境でのみ位置情報を取得
@@ -79,9 +105,10 @@ export default function MapPage() {
 
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            const { latitude, longitude } = position.coords;
-            console.log('位置情報取得成功:', { latitude, longitude });
+            const { latitude, longitude, accuracy } = position.coords;
+            console.log('位置情報取得成功:', { latitude, longitude, accuracy });
             setUserLocation([latitude, longitude]);
+            setGpsAccuracy(accuracy);
             setLocationPermission('granted');
             setIsLoading(false);
           },
@@ -562,46 +589,75 @@ export default function MapPage() {
                 </g>
               </svg>
               
-              {/* 自分の位置マーカー（より精密） */}
+              {/* 自分の位置マーカー（実際の座標位置に表示） */}
               {userLocation && (
-                <div 
-                  className="absolute w-12 h-12 z-30"
-                  style={{
-                    left: '50%',
-                    top: '50%',
-                    transform: 'translate(-50%, -50%)'
-                  }}
-                >
-                  <div className="relative">
-                    <div className="w-12 h-12 bg-blue-600 rounded-full border-4 border-white shadow-2xl flex items-center justify-center animate-pulse">
-                      <div className="w-5 h-5 bg-white rounded-full shadow-inner"></div>
+                (() => {
+                  const pixelPos = latLngToPixel(userLocation[0], userLocation[1]);
+                  return (
+                    <div 
+                      className="absolute w-12 h-12 z-30"
+                      style={{
+                        left: `${pixelPos.x}px`,
+                        top: `${pixelPos.y}px`,
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                    >
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-blue-600 rounded-full border-4 border-white shadow-2xl flex items-center justify-center animate-pulse">
+                          <div className="w-5 h-5 bg-white rounded-full shadow-inner"></div>
+                        </div>
+                        <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap font-medium shadow-xl border border-blue-500">
+                          📍 あなたの現在位置
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-600"></div>
+                        </div>
+                        {/* GPS精度の複数円 */}
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-blue-400 rounded-full opacity-20 animate-ping"></div>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-36 h-36 border border-blue-300 rounded-full opacity-10 animate-pulse"></div>
+                        
+                        {/* 現在地の詳細情報（ホバー時表示） */}
+                        <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 bg-white rounded-lg px-3 py-2 shadow-xl border border-gray-200 text-xs opacity-0 hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                          <div className="text-gray-700">
+                            <div>緯度: {userLocation[0].toFixed(6)}</div>
+                            <div>経度: {userLocation[1].toFixed(6)}</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap font-medium shadow-xl border border-blue-500">
-                      📍 あなたの現在位置
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-blue-600"></div>
-                    </div>
-                    {/* GPS精度の複数円 */}
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-2 border-blue-400 rounded-full opacity-20 animate-ping"></div>
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-36 h-36 border border-blue-300 rounded-full opacity-10 animate-pulse"></div>
-                  </div>
-                </div>
+                  );
+                })()
               )}
               
-              {/* 他のユーザー（より詳細） */}
-              <div className="absolute top-1/4 right-1/2 w-10 h-10 bg-purple-500 rounded-full border-3 border-white shadow-xl flex items-center justify-center z-20">
-                <span className="text-white text-sm font-bold">田</span>
-                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-xs bg-purple-500 text-white px-2 py-1 rounded-lg shadow-lg">
-                  田中さん
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-t-3 border-l-transparent border-r-transparent border-t-purple-500"></div>
-                </div>
-              </div>
-              <div className="absolute bottom-1/4 left-2/3 w-10 h-10 bg-orange-500 rounded-full border-3 border-white shadow-xl flex items-center justify-center z-20">
-                <span className="text-white text-sm font-bold">佐</span>
-                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 text-xs bg-orange-500 text-white px-2 py-1 rounded-lg shadow-lg">
-                  佐藤さん
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-t-3 border-l-transparent border-r-transparent border-t-orange-500"></div>
-                </div>
-              </div>
+              {/* 他のユーザー（実際の座標位置に表示） */}
+              {(() => {
+                // サンプルユーザーの座標
+                const sampleUsers = [
+                  { name: '田中さん', lat: 36.2557, lng: 136.6352, color: 'purple' },
+                  { name: '佐藤さん', lat: 36.2537, lng: 136.6332, color: 'orange' }
+                ];
+                
+                return sampleUsers.map((sampleUser, index) => {
+                  const pixelPos = latLngToPixel(sampleUser.lat, sampleUser.lng);
+                  return (
+                    <div 
+                      key={`user-${index}`}
+                      className="absolute w-10 h-10 z-20"
+                      style={{
+                        left: `${pixelPos.x}px`,
+                        top: `${pixelPos.y}px`,
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                    >
+                      <div className={`w-10 h-10 bg-${sampleUser.color}-500 rounded-full border-3 border-white shadow-xl flex items-center justify-center`}>
+                        <span className="text-white text-sm font-bold">{sampleUser.name.charAt(0)}</span>
+                        <div className={`absolute -top-12 left-1/2 transform -translate-x-1/2 text-xs bg-${sampleUser.color}-500 text-white px-2 py-1 rounded-lg shadow-lg`}>
+                          {sampleUser.name}
+                          <div className={`absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-t-3 border-l-transparent border-r-transparent border-t-${sampleUser.color}-500`}></div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
             
             {/* 地図コントロール（Googleマップ風） */}
@@ -612,8 +668,24 @@ export default function MapPage() {
                   variant="ghost"
                   className="w-10 h-10 p-0 rounded-none border-b border-gray-200 hover:bg-gray-50"
                   onClick={() => {
-                    console.log('現在位置に移動');
-                    alert('現在位置へ移動機能（実装予定）');
+                    if (userLocation) {
+                      const pixelPos = latLngToPixel(userLocation[0], userLocation[1]);
+                      console.log('現在位置に移動:', pixelPos);
+                      // スムーズスクロールで現在位置を中央に移動
+                      const mapElement = document.querySelector('[viewBox="0 0 1000 700"]')?.parentElement;
+                      if (mapElement) {
+                        const containerRect = mapElement.getBoundingClientRect();
+                        const scrollX = pixelPos.x - containerRect.width / 2;
+                        const scrollY = pixelPos.y - containerRect.height / 2;
+                        mapElement.scrollTo({
+                          left: Math.max(0, scrollX),
+                          top: Math.max(0, scrollY),
+                          behavior: 'smooth'
+                        });
+                      }
+                    } else {
+                      alert('位置情報が取得できていません');
+                    }
                   }}
                 >
                   <MapPin className="h-4 w-4 text-gray-700" />
@@ -706,7 +778,7 @@ export default function MapPage() {
                     {locationPermission === 'granted' ? '✅ GPS有効' : '❌ GPS無効'}
                   </div>
                   <div className="text-gray-500">
-                    <span className="font-medium">精度:</span> ±10m
+                    <span className="font-medium">精度:</span> {gpsAccuracy ? `±${Math.round(gpsAccuracy)}m` : '±10m'}
                   </div>
                   <div className="text-gray-500">
                     <span className="font-medium">標高:</span> 約650m
@@ -776,23 +848,6 @@ export default function MapPage() {
           )}
         </CardContent>
       </Card>
-
-      {/* アバター移動機能 */}
-      {user && (
-        <Card>
-          <CardHeader>
-            <CardTitle>アバター操作</CardTitle>
-            <CardDescription>
-              キーボードでアバターを操作してみましょう（WASD または 矢印キー）
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="relative">
-              <SimpleAvatarMovement />
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

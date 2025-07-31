@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React from 'react';
 
 interface PixelAvatarStyle {
   skinColor: string;
@@ -27,197 +27,77 @@ export function PixelAvatar({
   showName 
 }: PixelAvatarProps) {
   
-  // 肌の色マッピング
-  const getSkinColor = () => {
-    const skinMap: Record<string, string> = {
-      'light': '#fdbcb4',
-      'medium': '#e8a87c',
-      'dark': '#c67e5c',
-      'pale': '#f7d1c9'
-    };
-    return skinMap[style.skinColor] || '#fdbcb4';
-  };
-
-  // 髪の色マッピング
-  const getHairColor = () => {
-    const hairColorMap: Record<string, string> = {
-      'black': '#2c1b18',
-      'brown': '#6f4e37',
-      'blonde': '#faf0be',
-      'red': '#c54a2c',
-      'blue': '#4a90e2',
-      'green': '#5cb85c',
-      'purple': '#8e44ad',
-      'white': '#f8f9fa',
-      'pink': '#ff69b4'
-    };
-    return hairColorMap[style.hairColor] || '#6f4e37';
-  };
-
-  // 服の色マッピング
-  const getClothingColor = () => {
-    const clothingMap: Record<string, string> = {
-      'blue': '#007bff',
-      'red': '#dc3545',
-      'green': '#28a745',
-      'yellow': '#ffc107',
-      'purple': '#6f42c1',
-      'orange': '#fd7e14'
-    };
-    return clothingMap[style.clothing] || '#007bff';
-  };
-
-  // 髪型のSVGパス
-  const getHairStyle = () => {
-    const hairColor = getHairColor();
-    
-    switch (style.hairStyle) {
-      case 'short':
-        return (
-          <g fill={hairColor}>
-            <rect x="6" y="4" width="8" height="4" rx="4"/>
-            <rect x="4" y="6" width="12" height="2" rx="1"/>
-          </g>
-        );
-      case 'long':
-        return (
-          <g fill={hairColor}>
-            <rect x="4" y="4" width="12" height="6" rx="6"/>
-            <rect x="2" y="8" width="16" height="4" rx="2"/>
-            <rect x="1" y="10" width="18" height="3" rx="1"/>
-          </g>
-        );
-      case 'ponytail':
-        return (
-          <g fill={hairColor}>
-            <rect x="6" y="4" width="8" height="4" rx="4"/>
-            <rect x="4" y="6" width="12" height="2" rx="1"/>
-            <circle cx="16" cy="8" r="2"/>
-            <rect x="17" y="6" width="2" height="6" rx="1"/>
-          </g>
-        );
-      case 'bob':
-        return (
-          <g fill={hairColor}>
-            <rect x="4" y="4" width="12" height="6" rx="6"/>
-            <rect x="3" y="8" width="14" height="3" rx="1"/>
-          </g>
-        );
-      case 'curly':
-        return (
-          <g fill={hairColor}>
-            <circle cx="7" cy="6" r="2"/>
-            <circle cx="10" cy="5" r="2"/>
-            <circle cx="13" cy="6" r="2"/>
-            <circle cx="5" cy="8" r="1.5"/>
-            <circle cx="15" cy="8" r="1.5"/>
-            <circle cx="8" cy="8" r="1"/>
-            <circle cx="12" cy="8" r="1"/>
-          </g>
-        );
-      default:
-        return (
-          <g fill={hairColor}>
-            <rect x="6" y="4" width="8" height="4" rx="4"/>
-          </g>
-        );
+  // カラーパレット
+  const colors = {
+    skin: {
+      light: '#fdbcb4',
+      medium: '#e8a87c',
+      dark: '#c67e5c',
+      pale: '#f7d1c9'
+    },
+    hair: {
+      black: '#2c1b18',
+      brown: '#6f4e37',
+      blonde: '#faf0be',
+      red: '#c54a2c',
+      blue: '#4a90e2',
+      green: '#5cb85c',
+      purple: '#8e44ad',
+      white: '#f8f9fa',
+      pink: '#ff69b4'
+    },
+    clothing: {
+      red: '#dc3545',
+      blue: '#007bff',
+      green: '#28a745',
+      yellow: '#ffc107',
+      purple: '#6f42c1',
+      orange: '#fd7e14',
+      pink: '#e83e8c',
+      teal: '#20c997',
+      indigo: '#6610f2',
+      cyan: '#17a2b8'
     }
   };
 
-  // アクセサリーのSVG
-  const getAccessory = () => {
-    switch (style.accessory) {
-      case 'glasses':
-        return (
-          <g>
-            <rect x="5" y="10" width="4" height="3" fill="none" stroke="#333" strokeWidth="0.5" rx="1"/>
-            <rect x="11" y="10" width="4" height="3" fill="none" stroke="#333" strokeWidth="0.5" rx="1"/>
-            <line x1="9" y1="11" x2="11" y2="11" stroke="#333" strokeWidth="0.5"/>
-          </g>
-        );
-      case 'hat':
-        return (
-          <g fill="#1a1a1a">
-            <rect x="2" y="2" width="16" height="6" rx="8"/>
-            <rect x="0" y="6" width="20" height="2" rx="1"/>
-          </g>
-        );
-      case 'crown':
-        return (
-          <g fill="#ffd700">
-            <rect x="4" y="3" width="12" height="3"/>
-            <polygon points="6,3 7,0 8,3"/>
-            <polygon points="9,3 10,1 11,3"/>
-            <polygon points="12,3 13,0 14,3"/>
-            <circle cx="10" cy="4" r="1" fill="#ff0000"/>
-          </g>
-        );
-      case 'earphones':
-        return (
-          <g fill="#333">
-            <rect x="2" y="6" width="2" height="3" rx="1"/>
-            <rect x="16" y="6" width="2" height="3" rx="1"/>
-            <path d="M4,7 Q10,2 16,7" stroke="#333" strokeWidth="1" fill="none"/>
-          </g>
-        );
-      default:
-        return null;
-    }
-  };
+  // ドット絵パターン生成
+  const generatePixelPattern = () => {
+    const pixels = [];
+    const pixelSize = size / 16; // 16x16 ドット
 
-  return (
-    <div className={`relative ${isMoving ? 'animate-bounce' : ''}`}>
-      <svg 
-        width={size} 
-        height={size} 
-        viewBox="0 0 20 20" 
-        className="w-full h-full pixelated"
-        style={{ imageRendering: 'pixelated' }}
-      >
-        {/* 顔の輪郭 */}
-        <circle cx="10" cy="12" r="6" fill={getSkinColor()} stroke="#000" strokeWidth="0.3"/>
+    // 背景
+    for (let y = 0; y < 16; y++) {
+      for (let x = 0; x < 16; x++) {
+        let color = 'transparent';
+        const key = `${x}-${y}`;
+
+        // 顔の輪郭 (肌色)
+        if (isFacePixel(x, y)) {
+          color = colors.skin[style.skinColor as keyof typeof colors.skin] || colors.skin.light;
+        }
         
-        {/* 髪型 */}
-        {getHairStyle()}
+        // 髪の毛
+        else if (isHairPixel(x, y, style.hairStyle)) {
+          color = colors.hair[style.hairColor as keyof typeof colors.hair] || colors.hair.black;
+        }
         
-        {/* 目 */}
-        <circle cx="8" cy="11" r="0.8" fill="#000"/>
-        <circle cx="12" cy="11" r="0.8" fill="#000"/>
+        // 服
+        else if (isClothingPixel(x, y, style.clothing)) {
+          color = colors.clothing[style.clothing as keyof typeof colors.clothing] || colors.clothing.blue;
+        }
         
-        {/* 表情 */}
-        {style.face === 'wink' ? (
-          <g>
-            <circle cx="8" cy="11" r="0.8" fill="#000"/>
-            <path d="M11.2,10.5 Q12,11 12.8,10.5" stroke="#000" strokeWidth="0.3" fill="none"/>
-          </g>
-        ) : style.face === 'happy' || style.face === 'smile' ? (
-          <path d="M8,13.5 Q10,15 12,13.5" stroke="#000" strokeWidth="0.4" fill="none"/>
-        ) : style.face === 'cool' ? (
-          <line x1="8" y1="13.5" x2="12" y2="13.5" stroke="#000" strokeWidth="0.3"/>
-        ) : style.face === 'surprise' ? (
-          <circle cx="10" cy="13.5" r="0.8" fill="none" stroke="#000" strokeWidth="0.3"/>
-        ) : (
-          <path d="M8.5,13.2 Q10,14 11.5,13.2" stroke="#000" strokeWidth="0.3" fill="none"/>
-        )}
+        // 目
+        else if (isEyePixel(x, y, style.face)) {
+          color = '#000000';
+        }
         
-        {/* 鼻 */}
-        <circle cx="10" cy="12.5" r="0.2" fill={getSkinColor()} stroke="#000" strokeWidth="0.1"/>
-        
-        {/* 体（服） */}
-        <rect x="6" y="17" width="8" height="3" fill={getClothingColor()} stroke="#000" strokeWidth="0.2" rx="1"/>
-        
-        {/* アクセサリー */}
-        {getAccessory()}
-      </svg>
-      
-      {showName && (
-        <div className="text-center mt-2">
-          <p className="text-sm font-medium">{showName}</p>
-        </div>
-      )}
-    </div>
-  );
-}
+        // 口
+        else if (isMouthPixel(x, y, style.face)) {
+          color = '#ff6b9d';
+        }
+
+        if (color !== 'transparent') {
+          pixels.push(
             <div
               key={key}
               className="absolute"
@@ -240,9 +120,12 @@ export function PixelAvatar({
   // 顔のピクセル判定
   const isFacePixel = (x: number, y: number): boolean => {
     // 楕円形の顔
-    const centerX = 8, centerY = 10;
-    const radiusX = 4, radiusY = 5;
-    const dx = x - centerX, dy = y - centerY;
+    const centerX = 8;
+    const centerY = 10;
+    const radiusX = 4;
+    const radiusY = 5;
+    const dx = x - centerX;
+    const dy = y - centerY;
     return (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY) <= 1;
   };
 
