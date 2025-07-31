@@ -13,7 +13,12 @@ import {
   Navigation,
   Wifi,
   WifiOff,
-  AlertCircle
+  AlertCircle,
+  Home,
+  Calendar,
+  MessageCircle,
+  BookOpen,
+  Trophy
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
@@ -848,6 +853,50 @@ export default function MapPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* 下部ナビゲーションバー（Instagram/Twitter風） */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-2xl">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-around py-2">
+            {/* ホーム */}
+            <Link href="/dashboard" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-blue-600 transition-colors duration-200">
+              <Home className="h-6 w-6 mb-1" />
+              <span className="text-xs font-medium">ホーム</span>
+            </Link>
+            
+            {/* カレンダー */}
+            <Link href="/calendar" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-green-600 transition-colors duration-200">
+              <Calendar className="h-6 w-6 mb-1" />
+              <span className="text-xs font-medium">予定</span>
+            </Link>
+            
+            {/* マップ（現在のページ） */}
+            <Link href="/map" className="flex flex-col items-center py-2 px-3 text-blue-600 bg-blue-50 rounded-lg">
+              <MapPin className="h-6 w-6 mb-1" />
+              <span className="text-xs font-bold">マップ</span>
+            </Link>
+            
+            {/* クエスト */}
+            <Link href="/quest" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-purple-600 transition-colors duration-200">
+              <Trophy className="h-6 w-6 mb-1" />
+              <span className="text-xs font-medium">クエスト</span>
+            </Link>
+            
+            {/* チャット */}
+            <Link href="/chat" className="flex flex-col items-center py-2 px-3 text-gray-600 hover:text-orange-600 transition-colors duration-200 relative">
+              <MessageCircle className="h-6 w-6 mb-1" />
+              <span className="text-xs font-medium">チャット</span>
+              {/* 未読バッジ（サンプル） */}
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                <span className="text-xs text-white font-bold">3</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* 下部ナビゲーション分のスペース確保 */}
+      <div className="h-20"></div>
     </div>
   );
 }
