@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { PWAInstallButton } from "@/components/ui/PWAInstallButton";
 import { AuthInitializer } from "@/components/AuthInitializer";
-import { BottomNavigation } from "@/components/ui/bottom-navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -90,15 +89,14 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-16`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased light bg-white text-gray-900`}
+        style={{ 
+          backgroundColor: 'white',
+          color: '#111827'
+        }}
       >
         <AuthInitializer>
-          <div className="min-h-screen bg-gray-50">
-            <main className="pb-safe">
-              {children}
-            </main>
-            <BottomNavigation />
-          </div>
+          {children}
         </AuthInitializer>
         <PWAInstallButton />
       </body>

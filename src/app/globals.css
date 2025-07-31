@@ -5,6 +5,40 @@
 @tailwind utilities;
 
 :root {
+  /* ライトモードをデフォルトに設定 - 白背景ベース */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 212.7 26.8% 83.9%;
+
+  --radius: 0.5rem;
+}
+
+/* ダークモード対応（オプション） */
+.dark {
   --background: 222.2 84% 4.9%;
   --foreground: 210 40% 98%;
 
@@ -32,11 +66,10 @@
   --border: 217.2 32.6% 17.5%;
   --input: 217.2 32.6% 17.5%;
   --ring: 212.7 26.8% 83.9%;
-
-  --radius: 0.5rem;
 }
 
 .light {
+  /* 明示的なライトモード設定（念のため） */
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
 
@@ -66,25 +99,26 @@
   --ring: 222.2 84% 4.9%;
 }
 
+/* ダークモード端末でも強制的にライトモードを適用 */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 100% !important;
+    --foreground: 222.2 84% 4.9% !important;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100% !important;
+    --card-foreground: 222.2 84% 4.9% !important;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100% !important;
+    --popover-foreground: 222.2 84% 4.9% !important;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 222.2 47.4% 11.2% !important;
+    --primary-foreground: 210 40% 98% !important;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary: 210 40% 96% !important;
+    --secondary-foreground: 222.2 84% 4.9% !important;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 40% 96% !important;
+    --muted-foreground: 215.4 16.3% 46.9% !important;
 
     --accent: 210 40% 96%;
     --accent-foreground: 222.2 84% 4.9%;
@@ -207,16 +241,46 @@ body {
   animation: slide-up 0.3s ease-out;
 }
 
-/* Safe Area対応クラス */
-.safe-area-pb {
-  padding-bottom: env(safe-area-inset-bottom);
+/* ライトモード強制 - どの端末でも白背景にダークテキスト */
+* {
+  color-scheme: light !important;
 }
 
-.pb-safe {
-  padding-bottom: max(4rem, env(safe-area-inset-bottom));
+html, body {
+  background-color: white !important;
+  color: #111827 !important;
 }
 
-/* BottomNavigation専用スタイル */
-.bottom-nav-height {
-  height: calc(4rem + env(safe-area-inset-bottom));
+/* すべてのコンポーネントにライトモードを強制適用 */
+.dark, 
+[data-theme="dark"] {
+  background-color: white !important;
+  color: #111827 !important;
 }
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: white !important;
+    color: #111827 !important;
+  }
+  
+  * {
+    background-color: inherit !important;
+  }
+  
+  .bg-black { background-color: white !important; }
+  .text-white { color: #111827 !important; }
+  .text-gray-100 { color: #374151 !important; }
+  .text-gray-200 { color: #4b5563 !important; }
+  .text-gray-300 { color: #6b7280 !important; }
+}
+
+/* 特定の要素の背景を明示的に白に設定 */
+.bg-background { background-color: white !important; }
+.bg-card { background-color: white !important; }
+.bg-popover { background-color: white !important; }
+
+/* 文字色を明示的にダークに設定 */
+.text-foreground { color: #111827 !important; }
+.text-card-foreground { color: #111827 !important; }
+.text-popover-foreground { color: #111827 !important; }

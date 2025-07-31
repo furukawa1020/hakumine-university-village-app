@@ -1,6 +1,6 @@
 [build]
   publish = ".next"
-  command = "npm run build"
+  command = "npm ci && npm run build"
 
 [build.environment]
   NODE_VERSION = "18.19.1"
@@ -8,6 +8,7 @@
   NODE_OPTIONS = "--max-old-space-size=4096"
   NODE_ENV = "production"
   NEXT_TELEMETRY_DISABLED = "1"
+  SKIP_INSTALL_DEPS = "false"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
