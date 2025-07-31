@@ -1,5 +1,5 @@
 [build]
-  publish = ".next"
+  publish = "out"
   command = "npm install --legacy-peer-deps --omit=optional; npx next telemetry disable; npm run build"
 
 [build.environment]
@@ -8,6 +8,3 @@
   NODE_OPTIONS = "--max-old-space-size=4096"
   NODE_ENV = "production"
   NEXT_TELEMETRY_DISABLED = "1"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"

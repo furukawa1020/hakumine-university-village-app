@@ -2,6 +2,8 @@
 const nextConfig = {
   // Netlify対応設定
   trailingSlash: false,
+  output: 'export',
+  distDir: 'out',
   images: {
     unoptimized: true
   },
