@@ -1,8 +1,8 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  // ダークモードを完全に無効化し、ライトモードのみに固定
-  darkMode: "class", // クラスベースに変更して制御可能にする
+  // カスタムセレクターでダークモードを制御
+  darkMode: ['class', '[data-theme="dark"]'],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",

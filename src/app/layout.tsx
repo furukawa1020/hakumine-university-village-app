@@ -89,11 +89,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased light bg-white text-gray-900`}
-        style={{ 
-          backgroundColor: 'white',
-          color: '#111827'
-        }}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
       >
         <AuthInitializer>
           {children}

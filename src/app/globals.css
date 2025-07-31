@@ -252,27 +252,30 @@ html, body {
 }
 
 /* すべてのコンポーネントにライトモードを強制適用 */
-.dark, 
-[data-theme="dark"] {
+:root {
+  color-scheme: light;
+}
+
+body {
   background-color: white !important;
   color: #111827 !important;
 }
 
+/* ダークモード時でも強制的にライトモードカラーを適用 */
 @media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light;
+  }
+
   body {
     background-color: white !important;
     color: #111827 !important;
   }
-  
-  * {
-    background-color: inherit !important;
+
+  .dark {
+    background-color: white !important;
+    color: #111827 !important;
   }
-  
-  .bg-black { background-color: white !important; }
-  .text-white { color: #111827 !important; }
-  .text-gray-100 { color: #374151 !important; }
-  .text-gray-200 { color: #4b5563 !important; }
-  .text-gray-300 { color: #6b7280 !important; }
 }
 
 /* 特定の要素の背景を明示的に白に設定 */
