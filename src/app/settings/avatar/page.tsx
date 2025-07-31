@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PixelAvatar } from '@/components/avatar/PixelAvatar';
+import { PixelAvatarRenderer } from '@/components/avatar/PixelAvatarRenderer';
 import { ArrowLeft, Palette, Save, RotateCcw, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -189,10 +189,9 @@ export default function AvatarSettingsPage() {
             </CardHeader>
             <CardContent className="flex flex-col items-center space-y-4">
               <div className="p-8 bg-gray-50 rounded-lg">
-                <PixelAvatar 
-                  style={avatarStyle}
+                <PixelAvatarRenderer 
+                  config={avatarStyle}
                   size={120}
-                  showName={user.displayName}
                 />
               </div>
               

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
+import { PixelAvatarRenderer } from './PixelAvatarRenderer';
 
 interface Position {
   x: number;
@@ -115,39 +116,10 @@ export default function SimpleAvatarMovement() {
     isMoving: boolean;
     name: string;
   }) => {
-    const getAvatarColor = () => {
-      if (userAvatar?.clothing) {
-        const colorMap: Record<string, string> = {
-          'blue': 'bg-blue-500',
-          'red': 'bg-red-500', 
-          'green': 'bg-green-500',
-          'yellow': 'bg-yellow-500',
-          'purple': 'bg-purple-500',
-          'orange': 'bg-orange-500'
-        };
-        return colorMap[userAvatar.clothing] || 'bg-blue-500';
-      }
-      
-      // 方向によるデフォルト色
-      return direction === 'up' ? 'bg-blue-500' : 
-             direction === 'down' ? 'bg-green-500' : 
-             direction === 'left' ? 'bg-yellow-500' : 
-             'bg-red-500';
-    };
-
-    const getAvatarInitials = () => {
-      if (userAvatar?.face === 'happy') return '😊';
-      if (userAvatar?.face === 'smile') return '😄';
-      if (userAvatar?.face === 'wink') return '😉';
-      if (userAvatar?.face === 'cool') return '😎';
-      if (userAvatar?.face === 'surprise') return '😮';
-      return name.charAt(0).toUpperCase();
-    };
-
     return (
       <div
         className={`
-          absolute w-12 h-12 transition-all duration-200 z-20
+          absolute transition-all duration-200 z-20
           ${isMoving ? 'scale-110' : 'scale-100'}
         `}
         style={{
@@ -157,48 +129,51 @@ export default function SimpleAvatarMovement() {
         }}
       >
         <div className="relative">
-          {/* アバターアイコン */}
+          {/* ドット絵アバター */}
           <div className={`
-            w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm
             ${isMoving ? 'animate-bounce' : ''}
-            ${getAvatarColor()}
-            border-2 border-white shadow-lg
+            shadow-lg rounded-lg bg-white/10 backdrop-blur-sm p-1
           `}>
-            <span className="text-lg">
-              {getAvatarInitials()}
-            </span>
+            {userAvatar ? (
+              <PixelAvatarRenderer 
+                config={userAvatar}
+                size={48}
+                direction={direction}
+              />
+            ) : (
+              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold border-2 border-white">
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
           </div>
           
-          {/* アクセサリー表示 */}
-          {userAvatar?.accessory && userAvatar.accessory !== 'none' && (
-            <div className="absolute -top-1 -right-1">
-              {userAvatar.accessory === 'hat' && <span className="text-lg">🎩</span>}
-              {userAvatar.accessory === 'crown' && <span className="text-lg">👑</span>}
-              {userAvatar.accessory === 'glasses' && <span className="text-lg">👓</span>}
-              {userAvatar.accessory === 'earphones' && <span className="text-lg">🎧</span>}
-            </div>
-          )}
-          
           {/* 名前表示 */}
-          <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1">
-            <div className="bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2">
+            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded-full whitespace-nowrap font-medium shadow-lg">
               {name}
             </div>
           </div>
           
           {/* 方向矢印 */}
-          <div className="absolute -top-2 -right-2">
+          <div className="absolute -top-1 -right-1">
             <div className={`
-              w-4 h-4 bg-white border-2 border-gray-800 rounded-full flex items-center justify-center
-              transform transition-transform duration-200
+              w-3 h-3 bg-yellow-400 border border-yellow-600 rounded-full flex items-center justify-center
+              transform transition-transform duration-200 shadow-md
               ${direction === 'up' ? 'rotate-0' : 
                 direction === 'right' ? 'rotate-90' : 
                 direction === 'down' ? 'rotate-180' : 
                 'rotate-270'}
             `}>
-              <div className="w-0 h-0 border-l-[3px] border-r-[3px] border-b-[4px] border-l-transparent border-r-transparent border-b-gray-800"></div>
+              <div className="w-0 h-0 border-l-[2px] border-r-[2px] border-b-[3px] border-l-transparent border-r-transparent border-b-black"></div>
             </div>
           </div>
+
+          {/* 移動エフェクト */}
+          {isMoving && (
+            <div className="absolute inset-0 -m-2">
+              <div className="w-full h-full border-2 border-yellow-400 rounded-full animate-ping opacity-30"></div>
+            </div>
+          )}
         </div>
       </div>
     );
