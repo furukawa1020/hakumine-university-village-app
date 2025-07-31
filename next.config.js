@@ -22,12 +22,12 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-DEMO',
   },
 
-  // エラー無視設定（開発中）
+  // ビルド時のエラーチェックを有効化
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
   // 基本設定
@@ -72,12 +72,19 @@ const nextConfig = {
 
     // 外部パッケージの設定（Netlify対応）
     config.externals = config.externals || [];
+    
+    // Leaflet関連のSSR問題を回避
+    if (isServer) {
+      config.externals.push('leaflet', 'react-leaflet');
+    }
 
     return config
   },
 
   // 外部パッケージの transpilation 設定
-  transpilePackages: [],
+  transpilePackages: ['leaflet', 'react-leaflet'],
 }
+
+module.exports = nextConfig;
 
 module.exports = nextConfig;
