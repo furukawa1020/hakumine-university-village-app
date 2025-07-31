@@ -282,41 +282,57 @@ export default function MapPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="relative bg-gradient-to-br from-green-100 via-blue-50 to-purple-50 rounded-lg min-h-[500px] overflow-hidden">
+          <div className="relative bg-gradient-to-br from-green-100 via-blue-50 to-purple-50 rounded-lg min-h-[500px] overflow-hidden border-2 border-gray-200">
             {/* 地図背景 */}
             <div className="absolute inset-0">
               {/* 山の背景 */}
               <div className="absolute bottom-0 left-0 w-full h-2/3">
-                <svg viewBox="0 0 400 200" className="w-full h-full opacity-20">
+                <svg viewBox="0 0 400 200" className="w-full h-full opacity-30">
                   <polygon points="0,200 100,50 200,80 300,30 400,60 400,200" fill="#10b981" />
                   <polygon points="0,200 80,100 160,120 240,80 320,100 400,90 400,200" fill="#059669" />
+                  <polygon points="50,200 150,70 250,90 350,40 400,50 400,200" fill="#065f46" />
                 </svg>
               </div>
               
+              {/* 道路パス */}
+              <svg className="absolute inset-0 w-full h-full opacity-40">
+                <path d="M0,150 Q100,130 200,140 T400,120" stroke="#6b7280" strokeWidth="8" fill="none" strokeDasharray="20,10"/>
+                <path d="M50,200 Q150,180 250,190 T400,170" stroke="#6b7280" strokeWidth="6" fill="none" strokeDasharray="15,8"/>
+              </svg>
+              
               {/* 建物・施設のマーカー */}
-              <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-lg">
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-red-500 text-white px-2 py-1 rounded whitespace-nowrap">
+              <div className="absolute top-1/4 left-1/4 w-6 h-6 bg-red-500 rounded-lg border-2 border-white shadow-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">研</span>
+                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-xs bg-red-500 text-white px-2 py-1 rounded whitespace-nowrap">
                   白峰研修センター
                 </div>
               </div>
-              <div className="absolute top-1/3 right-1/3 w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg">
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-blue-500 text-white px-2 py-1 rounded whitespace-nowrap">
+              <div className="absolute top-1/3 right-1/3 w-6 h-6 bg-blue-500 rounded-lg border-2 border-white shadow-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">食</span>
+                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-xs bg-blue-500 text-white px-2 py-1 rounded whitespace-nowrap">
                   食堂
                 </div>
               </div>
-              <div className="absolute bottom-1/3 left-1/3 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-lg">
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-green-500 text-white px-2 py-1 rounded whitespace-nowrap">
+              <div className="absolute bottom-1/3 left-1/3 w-6 h-6 bg-green-500 rounded-lg border-2 border-white shadow-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">図</span>
+                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-xs bg-green-500 text-white px-2 py-1 rounded whitespace-nowrap">
                   図書館
                 </div>
               </div>
-              <div className="absolute top-1/2 right-1/4 w-4 h-4 bg-yellow-500 rounded-full border-2 border-white shadow-lg">
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-yellow-500 text-white px-2 py-1 rounded whitespace-nowrap">
+              <div className="absolute top-1/2 right-1/4 w-6 h-6 bg-yellow-500 rounded-lg border-2 border-white shadow-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">体</span>
+                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-xs bg-yellow-500 text-white px-2 py-1 rounded whitespace-nowrap">
                   体育館
                 </div>
               </div>
               
+              {/* 自然要素 */}
+              <div className="absolute top-1/6 left-1/6 w-4 h-4 bg-green-400 rounded-full opacity-60"></div>
+              <div className="absolute top-1/5 left-1/5 w-3 h-3 bg-green-500 rounded-full opacity-60"></div>
+              <div className="absolute top-1/8 left-1/8 w-2 h-2 bg-green-600 rounded-full opacity-60"></div>
+              
               {/* グリッドライン */}
-              <svg className="absolute inset-0 w-full h-full opacity-10">
+              <svg className="absolute inset-0 w-full h-full opacity-15">
                 {Array.from({ length: 21 }, (_, i) => (
                   <g key={i}>
                     <line x1={`${i * 5}%`} y1="0%" x2={`${i * 5}%`} y2="100%" stroke="#64748b" strokeWidth="1" />
@@ -328,26 +344,29 @@ export default function MapPage() {
               {/* 自分の位置マーカー */}
               {userLocation && (
                 <div 
-                  className="absolute w-6 h-6 bg-blue-600 rounded-full border-4 border-white shadow-lg z-20 animate-pulse"
+                  className="absolute w-8 h-8 bg-blue-600 rounded-full border-4 border-white shadow-lg z-20 flex items-center justify-center"
                   style={{
                     left: '50%',
                     top: '50%',
                     transform: 'translate(-50%, -50%)'
                   }}
                 >
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                    あなた
+                  <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                  <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap font-medium">
+                    📍 あなたの位置
                   </div>
                 </div>
               )}
               
               {/* 他のユーザーのサンプル */}
-              <div className="absolute top-1/4 right-1/2 w-5 h-5 bg-purple-500 rounded-full border-2 border-white shadow-lg">
+              <div className="absolute top-1/4 right-1/2 w-6 h-6 bg-purple-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">田</span>
                 <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-purple-500 text-white px-1 py-0.5 rounded">
                   田中
                 </div>
               </div>
-              <div className="absolute bottom-1/4 left-2/3 w-5 h-5 bg-orange-500 rounded-full border-2 border-white shadow-lg">
+              <div className="absolute bottom-1/4 left-2/3 w-6 h-6 bg-orange-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center">
+                <span className="text-white text-xs font-bold">佐</span>
                 <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs bg-orange-500 text-white px-1 py-0.5 rounded">
                   佐藤
                 </div>
@@ -359,23 +378,43 @@ export default function MapPage() {
               <Button 
                 size="sm" 
                 variant="secondary"
-                className="bg-white/90 backdrop-blur-sm hover:bg-white/95"
+                className="bg-white/90 backdrop-blur-sm hover:bg-white/95 shadow-lg"
                 onClick={() => {
-                  // 自分の位置に中央寄せ（将来の機能）
                   console.log('自分の位置に移動');
+                  alert('現在位置へ移動機能（実装予定）');
                 }}
               >
                 <MapPin className="h-4 w-4" />
               </Button>
             </div>
             
+            {/* 地図の凡例 */}
+            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 text-xs z-30 space-y-1">
+              <p className="font-medium mb-2">🗺️ 地図凡例</p>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+                <span>あなたの位置</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-red-500 rounded"></div>
+                <span>施設・建物</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                <span>他の学生</span>
+              </div>
+            </div>
+            
             {/* 現在位置情報 */}
             {userLocation && (
               <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 text-sm z-30">
-                <p className="font-medium text-gray-700 mb-1">📍 現在位置</p>
+                <p className="font-medium text-gray-700 mb-1">📍 位置情報</p>
                 <p className="text-xs text-gray-600">
                   緯度: {userLocation[0].toFixed(6)}<br />
                   経度: {userLocation[1].toFixed(6)}
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  {locationPermission === 'granted' ? '✅ GPS有効' : '❌ GPS無効'}
                 </p>
               </div>
             )}
@@ -429,7 +468,9 @@ export default function MapPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <SimpleAvatarMovement />
+            <div className="relative">
+              <SimpleAvatarMovement />
+            </div>
           </CardContent>
         </Card>
       )}

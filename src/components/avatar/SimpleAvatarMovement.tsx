@@ -213,7 +213,19 @@ export default function SimpleAvatarMovement() {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="relative w-full h-80 overflow-hidden bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border-2 border-dashed border-gray-300">
+      {/* 地図の背景パターン */}
+      <div className="absolute inset-0 opacity-20">
+        <svg className="w-full h-full">
+          {Array.from({ length: 11 }, (_, i) => (
+            <g key={i}>
+              <line x1={`${i * 10}%`} y1="0%" x2={`${i * 10}%`} y2="100%" stroke="#64748b" strokeWidth="1" />
+              <line x1="0%" y1={`${i * 10}%`} x2="100%" y2={`${i * 10}%`} stroke="#64748b" strokeWidth="1" />
+            </g>
+          ))}
+        </svg>
+      </div>
+      
       {/* 自分のアバター */}
       <AvatarDisplay
         position={position}
