@@ -8,9 +8,7 @@ const nextConfig = {
   
   // 実験的機能の設定
   experimental: {
-    // サーバーコンポーネントの設定
-    serverComponentsExternalPackages: ['leaflet', 'react-leaflet'],
-    // その他の実験的機能
+    // その他の実験的機能（leafletパッケージは削除）
     optimizePackageImports: ['lucide-react', '@headlessui/react'],
   },
   
