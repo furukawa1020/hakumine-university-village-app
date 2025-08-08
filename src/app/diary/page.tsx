@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,109 +22,79 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/authStore';
+import { useDiaryStore } from '@/stores/diaryStore';
 import { XNavigation } from '@/components/navigation/XNavigation';
 
 export default function DiaryPage() {
   const { user } = useAuthStore();
+  const {
+    entries,
+    loading,
+    fetchEntries,
+    createEntry,
+    likeEntry,
+    unlikeEntry
+  } = useDiaryStore();
+
   const [selectedTab, setSelectedTab] = useState<'mine' | 'all'>('mine');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedVisibility, setSelectedVisibility] = useState<'all' | 'public' | 'limited' | 'private'>('all');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newEntryTitle, setNewEntryTitle] = useState('');
+  const [newEntryContent, setNewEntryContent] = useState('');
+  const [newEntryVisibility, setNewEntryVisibility] = useState<'public' | 'limited' | 'private'>('public');
 
-  // サンプル日記データ（useAuthStore後に移動）
-  const sampleDiaryEntries = [
-    {
-      id: '1',
-      title: '初めての雪かき体験',
-      content: '今日は白峰で初めての雪かきを体験しました。想像していたよりもずっと大変でしたが、地域の方々と一緒に作業することで、コミュニティの温かさを感じることができました。特に、お隣の田中おじいさんが教えてくれた効率的な雪かきのコツは本当に役に立ちました。\n\n作業後に飲んだ温かいお茶の美味しさは格別で、みんなで頑張った達成感と一緒に心に残っています。明日筋肉痛になりそうですが、また参加したいと思います。',
-      date: new Date('2025-01-13T18:30:00'),
-      visibility: 'public',
-      tags: ['雪かき', '地域交流', '初体験'],
-      images: ['/diary-images/snow-removal-1.jpg'],
-      likes: 8,
-      comments: 3,
-      author: {
-        name: user?.displayName || 'あなた',
-        avatar: '/avatars/current-user.jpg'
-      },
-      weather: '雪',
-      mood: 'happy'
-    },
-    {
-      id: '2',
-      title: '白峰の夜空と満天の星',
-      content: '都市部では決して見ることのできない満天の星空を見ることができました。空気が澄んでいて、天の川もはっきりと見えます。\n\n地元の方に教えてもらった星座の話も興味深く、白峰の自然の豊かさを改めて実感しました。写真では伝わらない美しさですが、この感動を記録に残しておきたいと思います。',
-      date: new Date('2025-01-12T22:15:00'),
-      visibility: 'limited',
-      tags: ['星空', '自然', '感動'],
-      images: ['/diary-images/starry-sky.jpg'],
-      likes: 12,
-      comments: 5,
-      author: {
-        name: user?.displayName || 'あなた',
-        avatar: '/avatars/current-user.jpg'
-      },
-      weather: '晴れ',
-      mood: 'peaceful'
-    },
-    {
-      id: '3',
-      title: '薪割りに挑戦！',
-      content: '白峰伝統工芸館で薪割り体験をしてきました。最初は全然斧が当たらなくて、職人さんに笑われてしまいました😅\n\nでも、コツを教えてもらってからは徐々に上達して、最後には綺麗に割ることができるように！達成感がすごかったです。',
-      date: new Date('2025-01-11T16:00:00'),
-      visibility: 'public',
-      tags: ['薪割り', '文化体験', '達成感'],
-      images: [],
-      likes: 6,
-      comments: 2,
-      author: {
-        name: user?.displayName || 'あなた',
-        avatar: '/avatars/current-user.jpg'
-      },
-      weather: '曇り',
-      mood: 'excited'
+  useEffect(() => {
+    fetchEntries();
+  }, [fetchEntries]);
+
+  const handleCreateEntry = async () => {
+    if (!user || !newEntryTitle.trim() || !newEntryContent.trim()) return;
+
+    try {
+      await createEntry({
+        title: newEntryTitle,
+        content: newEntryContent,
+        date: new Date(),
+        visibility: newEntryVisibility,
+        tags: [],
+        mood: 'happy',
+        weather: 'sunny'
+      });
+      
+      setShowCreateModal(false);
+      setNewEntryTitle('');
+      setNewEntryContent('');
+      setNewEntryVisibility('public');
+      
+      // エントリーを再取得
+      fetchEntries();
+    } catch (error) {
+      console.error('日記エントリーの作成に失敗しました:', error);
     }
-  ];
+  };
 
-  // 他のユーザーの日記（サンプル）
-  const sampleOtherEntries = [
-    {
-      id: '4',
-      title: 'おばあちゃんとの料理教室',
-      content: '地域のおばあちゃんに郷土料理を教えてもらいました。手作りの温かさを感じられる素敵な時間でした。',
-      date: new Date('2025-01-13T14:00:00'),
-      visibility: 'public',
-      tags: ['料理', '地域交流', '郷土料理'],
-      images: ['/diary-images/cooking.jpg'],
-      likes: 15,
-      comments: 8,
-      author: {
-        name: '田中さん',
-        avatar: '/avatars/tanaka.jpg'
-      },
-      weather: '晴れ',
-      mood: 'happy'
-    },
-    {
-      id: '5',
-      title: '温泉で癒やされました',
-      content: '白峰の温泉は本当に最高です！疲れが一気に取れました♨️',
-      date: new Date('2025-01-12T19:30:00'),
-      visibility: 'public',
-      tags: ['温泉', 'リラックス'],
-      images: [],
-      likes: 9,
-      comments: 4,
-      author: {
-        name: '佐藤さん',
-        avatar: '/avatars/sato.jpg'
-      },
-      weather: '雪',
-      mood: 'relaxed'
+  const handleLikeToggle = async (entryId: string, isLiked: boolean) => {
+    if (!user) return;
+
+    try {
+      if (isLiked) {
+        await unlikeEntry(entryId, user.uid);
+      } else {
+        await likeEntry(entryId, user.uid);
+      }
+    } catch (error) {
+      console.error('いいねの処理に失敗しました:', error);
     }
-  ];
+  };
 
-  const myEntries = sampleDiaryEntries;
-  const allEntries = [...sampleDiaryEntries, ...sampleOtherEntries].sort((a, b) => b.date.getTime() - a.date.getTime());
+  // 検索とフィルタリング
+  const filteredEntries = entries.filter(entry => {
+    const matchesSearch = entry.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         entry.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesVisibility = selectedVisibility === 'all' || entry.visibility === selectedVisibility;
+    return matchesSearch && matchesVisibility;
+  });
 
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {
@@ -164,17 +134,16 @@ export default function DiaryPage() {
     }
   };
 
-  const filteredEntries = (selectedTab === 'mine' ? myEntries : allEntries)
-    .filter(entry => {
-      const matchesSearch = searchQuery === '' || 
-        entry.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        entry.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        entry.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesVisibility = selectedVisibility === 'all' || entry.visibility === selectedVisibility;
-      
-      return matchesSearch && matchesVisibility;
-    });
+  if (loading && entries.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
+        <div className="text-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">日記を読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50 pb-20">
@@ -199,12 +168,10 @@ export default function DiaryPage() {
               <Calendar className="h-4 w-4 mr-2" />
               カレンダー表示
             </Button>
-            <Link href="/diary/new">
-              <Button size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                新しい日記
-              </Button>
-            </Link>
+            <Button size="sm" onClick={() => setShowCreateModal(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              新しい日記
+            </Button>
           </div>
         </div>
       </header>
@@ -223,7 +190,7 @@ export default function DiaryPage() {
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
-                私の日記 ({myEntries.length})
+                私の日記 ({filteredEntries.filter(entry => entry.authorId === user?.uid).length})
               </button>
               <button
                 onClick={() => setSelectedTab('all')}
@@ -233,7 +200,7 @@ export default function DiaryPage() {
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
-                みんなの日記 ({allEntries.length})
+                みんなの日記 ({filteredEntries.length})
               </button>
             </div>
 
@@ -277,22 +244,22 @@ export default function DiaryPage() {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                       <span className="text-sm font-bold text-blue-600">
-                        {entry.author.name.charAt(0)}
+                        {entry.authorName.charAt(0)}
                       </span>
                     </div>
                     <div>
                       <CardTitle className="text-lg">{entry.title}</CardTitle>
                       <CardDescription className="flex items-center gap-2">
-                        <span>{entry.author.name}</span>
+                        <span>{entry.authorName}</span>
                         <span>•</span>
-                        <span>{entry.date.toLocaleDateString('ja-JP')}</span>
+                        <span>{new Date(entry.date).toLocaleDateString('ja-JP')}</span>
                       </CardDescription>
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{getWeatherEmoji(entry.weather)}</span>
-                    <span className="text-lg">{getMoodEmoji(entry.mood)}</span>
+                    <span className="text-lg">{getWeatherEmoji(entry.weather || '晴れ')}</span>
+                    <span className="text-lg">{getMoodEmoji(entry.mood || 'happy')}</span>
                     {selectedTab === 'mine' && (
                       <div className="flex items-center gap-1 text-xs text-gray-500">
                         {getVisibilityIcon(entry.visibility)}
@@ -340,8 +307,15 @@ export default function DiaryPage() {
                   {/* アクション */}
                   <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                     <div className="flex items-center gap-4">
-                      <button className="flex items-center gap-1 text-sm text-gray-600 hover:text-red-600 transition-colors">
-                        <Heart className="h-4 w-4" />
+                      <button 
+                        onClick={() => handleLikeToggle(entry.id, entry.likedBy.includes(user?.uid || ''))}
+                        className={`flex items-center gap-1 text-sm transition-colors ${
+                          entry.likedBy.includes(user?.uid || '') 
+                            ? 'text-red-600 hover:text-red-700' 
+                            : 'text-gray-600 hover:text-red-600'
+                        }`}
+                      >
+                        <Heart className={`h-4 w-4 ${entry.likedBy.includes(user?.uid || '') ? 'fill-current' : ''}`} />
                         <span>{entry.likes}</span>
                       </button>
                       <button className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600 transition-colors">
@@ -405,6 +379,65 @@ export default function DiaryPage() {
           </div>
         )}
       </div>
+
+      {/* 日記作成モーダル */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-lg">
+            <CardHeader>
+              <CardTitle>新しい日記を書く</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">タイトル</label>
+                <Input
+                  value={newEntryTitle}
+                  onChange={(e) => setNewEntryTitle(e.target.value)}
+                  placeholder="タイトルを入力してください"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">内容</label>
+                <textarea
+                  value={newEntryContent}
+                  onChange={(e) => setNewEntryContent(e.target.value)}
+                  placeholder="今日の出来事や思ったことを書いてください..."
+                  className="w-full p-3 border border-gray-300 rounded-md resize-none"
+                  rows={6}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">公開設定</label>
+                <select
+                  value={newEntryVisibility}
+                  onChange={(e) => setNewEntryVisibility(e.target.value as 'public' | 'limited' | 'private')}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                >
+                  <option value="public">公開</option>
+                  <option value="limited">限定公開</option>
+                  <option value="private">非公開</option>
+                </select>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setShowCreateModal(false)} className="flex-1">
+                  キャンセル
+                </Button>
+                <Button 
+                  onClick={handleCreateEntry} 
+                  className="flex-1"
+                  disabled={!newEntryTitle.trim() || !newEntryContent.trim()}
+                >
+                  投稿
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       <XNavigation />
     </div>
   );
