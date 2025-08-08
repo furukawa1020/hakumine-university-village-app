@@ -14,13 +14,16 @@ import {
   Bell,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Trophy,
+  User
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { XNavigation } from '@/components/navigation/XNavigation';
 
 // 静的生成を無効化
 export const dynamic = 'force-dynamic';
@@ -76,10 +79,12 @@ export default function DashboardPage() {
 
   const menuItems = [
     { icon: MapPin, label: 'マップ', href: '/map', color: 'text-red-600' },
-    { icon: BookOpen, label: 'クエスト', href: '/quests', color: 'text-green-600' },
+    { icon: Trophy, label: 'クエスト', href: '/quest', color: 'text-green-600' },
     { icon: Calendar, label: 'カレンダー', href: '/calendar', color: 'text-purple-600' },
     { icon: MessageCircle, label: 'チャット', href: '/chat', color: 'text-yellow-600' },
     { icon: BookOpen, label: '日記', href: '/diary', color: 'text-indigo-600' },
+    { icon: User, label: 'プロフィール', href: '/profile', color: 'text-blue-600' },
+    { icon: Settings, label: 'アバター設定', href: '/settings/avatar', color: 'text-pink-600' },
     { icon: Settings, label: '設定', href: '/settings', color: 'text-gray-600' }
   ];
 
@@ -400,6 +405,9 @@ export default function DashboardPage() {
             </Card>
           </div>
         </main>
+
+        {/* X風ナビゲーション */}
+        <XNavigation />
       </div>
     </div>
   );

@@ -12,8 +12,7 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', '@headlessui/react'],
   },
   
-  // SWC設定
-  swcMinify: true,
+  // SWC設定 (Next.js 15では swcMinify は削除されました)
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production'
   },

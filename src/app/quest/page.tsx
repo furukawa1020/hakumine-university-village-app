@@ -12,6 +12,7 @@ import {
   PlayCircle,
   MapPin
 } from 'lucide-react';
+import { XNavigation } from '@/components/navigation/XNavigation';
 
 const sampleQuests = [
   {
@@ -69,7 +70,8 @@ const getStatusIcon = (status: string) => {
 
 export default function QuestPage() {
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-6 space-y-6 pb-24">
       {/* ヘッダー */}
       <div className="text-center">
         <h1 className="text-2xl font-bold text-gray-900">クエスト</h1>
@@ -168,6 +170,10 @@ export default function QuestPage() {
           </Button>
         </CardContent>
       </Card>
+      </div>
+
+      {/* X風ナビゲーション */}
+      <XNavigation />
     </div>
   );
 }

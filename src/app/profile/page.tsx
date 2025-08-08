@@ -17,6 +17,7 @@ import {
   Edit
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { XNavigation } from '@/components/navigation/XNavigation';
 
 export default function ProfilePage() {
   const { user } = useAuthStore();
@@ -58,7 +59,7 @@ export default function ProfilePage() {
               <h1 className="text-2xl font-bold text-gray-900">
                 {user?.displayName || 'ユーザー名'}
               </h1>
-              <p className="text-gray-600 text-sm">{user?.email || 'メールアドレス'}</p>
+              <p className="text-gray-600 text-sm">{(user && 'email' in user) ? user.email : 'メールアドレス'}</p>
               <div className="flex items-center space-x-2 mt-2">
                 <Badge variant="secondary" className="text-xs">
                   <MapPin className="h-3 w-3 mr-1" />
@@ -190,6 +191,7 @@ export default function ProfilePage() {
           </div>
         </CardContent>
       </Card>
+      <XNavigation />
     </div>
   );
 }
