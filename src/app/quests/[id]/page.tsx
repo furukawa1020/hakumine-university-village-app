@@ -4,23 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import QuestDetailClient from './QuestDetailClient';
 
-// 静的エクスポート用：サンプルのクエストIDを生成
-export async function generateStaticParams() {
-  // 実際の実装では、FirebaseやAPIからクエストIDを取得
-  // 今回はサンプルとして固定のIDを返す
-  const sampleQuestIds = [
-    'sample-quest-1',
-    'sample-quest-2', 
-    'sample-quest-3',
-    'orientation-2024',
-    'cleanup-2024',
-    'cooking-2024'
-  ];
-  
-  return sampleQuestIds.map((id) => ({
-    id: id,
-  }));
-}
+// 動的ルートでの静的生成を無効化
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: { id: string };
