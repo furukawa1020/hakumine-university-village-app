@@ -3,6 +3,7 @@ const nextConfig = {
   // 静的エクスポート設定 (Netlify対応)
   output: 'export',
   trailingSlash: true,
+  distDir: 'out',
   images: {
     unoptimized: true
   },

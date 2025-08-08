@@ -4,10 +4,16 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import QuestDetailClient from './QuestDetailClient';
 
-// 静的パスを生成（空の配列でフォールバック）
+// 静的パラメータ生成（必須）
 export async function generateStaticParams() {
-  // 空の配列を返すことで、すべてのパスをfallback時に生成
-  return [];
+  // 静的エクスポートでは事前にパスを生成する必要があります
+  // 実際のFirebaseデータは取得できないため、プレースホルダーを使用
+  // 実際のアプリでは、ここでFirebaseからクエストIDリストを取得します
+  return [
+    { id: 'sample-quest-1' },
+    { id: 'sample-quest-2' },
+    { id: 'sample-quest-3' },
+  ];
 }
 
 interface PageProps {
