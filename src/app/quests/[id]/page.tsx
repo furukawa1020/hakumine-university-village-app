@@ -4,6 +4,9 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import QuestDetailClient from './QuestDetailClient';
 
+// 動的レンダリングを有効化（SSRエラー解決）
+export const dynamic = 'force-dynamic';
+
 // 型定義を明示的に追加
 export type Params = {
   id: string;
@@ -12,18 +15,6 @@ export type Params = {
 export type SearchParams = {
   [key: string]: string | string[] | undefined;
 };
-
-// dynamicParams を明示的に設定
-export const dynamicParams = true;
-
-// 静的パラメータ生成（必須） - サンプルパラメータを返す
-export async function generateStaticParams(): Promise<Params[]> {
-  // 静的エクスポートではサンプルパラメータを事前生成し、
-  // 他のパスは実行時にクライアント側で処理される
-  return [
-    { id: 'sample' }
-  ];
-}
 
 interface PageProps {
   params: { id: string };
