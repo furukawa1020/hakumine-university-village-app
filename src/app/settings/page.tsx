@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -20,10 +20,22 @@ import { useAuthStore } from '@/stores/authStore';
 export default function SettingsPage() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
 
-  if (!user) {
-    router.push('/login');
-    return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !user) {
+      router.push('/login');
+    }
+  }, [user, mounted, router]);
+
+  if (!mounted || !user) {
+    return <div className="min-h-screen bg-gradient-to-b from-blue-50 to-green-50 flex items-center justify-center">
+      <div className="text-center">読み込み中...</div>
+    </div>;
   }
 
   const settingsSections = [

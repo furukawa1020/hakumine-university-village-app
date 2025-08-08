@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Netlify対応設定
-  trailingSlash: false,
+  // 静的エクスポート設定 (Netlify対応)
+  output: 'export',
+  trailingSlash: true,
   images: {
     unoptimized: true
   },
