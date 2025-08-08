@@ -16,6 +16,8 @@ export async function generateStaticParams() {
   ];
 }
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   params: { id: string };
 }

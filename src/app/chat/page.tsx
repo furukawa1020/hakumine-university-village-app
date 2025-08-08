@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
 import ChatPageClient from './ChatPageClient';
 
+export const dynamic = 'force-dynamic';
+
 export default function ChatPage() {
   return (
     <Suspense fallback={

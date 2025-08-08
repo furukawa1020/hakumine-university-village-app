@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
 import QuestListClient from './QuestListClient';
 
+export const dynamic = 'force-dynamic';
+
 export default function QuestsPage() {
   return (
     <Suspense fallback={
