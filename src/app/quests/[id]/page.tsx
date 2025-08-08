@@ -4,6 +4,12 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import QuestDetailClient from './QuestDetailClient';
 
+// 静的エクスポート用のパラメータ生成
+export async function generateStaticParams() {
+  // 空の配列を返してフォールバック処理に委ねる
+  return [];
+}
+
 // 型定義を明示的に追加
 export type Params = {
   id: string;
