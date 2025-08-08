@@ -6,8 +6,11 @@ import QuestDetailClient from './QuestDetailClient';
 
 // 静的エクスポート用のパラメータ生成 - Netlify対応
 export async function generateStaticParams() {
-  // 空の配列を返してフォールバック処理に委ねる
-  return [];
+  // 静的エクスポートでは最低1つのパスが必要
+  // 実際のクエストIDは動的に処理される
+  return [
+    { id: 'placeholder' }
+  ];
 }
 
 // 型定義を明示的に追加
