@@ -3,15 +3,15 @@ import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
-// Firebase設定（環境変数を使用）
+// Firebase設定
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || ''
+  apiKey: "AIzaSyAEq7IxIneu-SA6-d-xdCZC2OU8cArJr84",
+  authDomain: "hakumine-university-village.firebaseapp.com",
+  projectId: "hakumine-university-village",
+  storageBucket: "hakumine-university-village.firebasestorage.app",
+  messagingSenderId: "710646321611",
+  appId: "1:710646321611:web:29562c376f4127f0a1664e",
+  measurementId: "G-0NBD8MDRZX"
 };
 
 // Firebase Services（動的初期化）
@@ -23,15 +23,7 @@ let firebaseStorage: FirebaseStorage | null = null;
 // Firebase初期化関数（遅延初期化）
 function initializeFirebase() {
   // サーバーサイドでは初期化しない
-  if (typeof window === 'undefined') {
-    console.log('Server-side execution: skipping Firebase initialization');
-    return null;
-  }
-
-  // すでに初期化済みの場合はスキップ
-  if (firebaseApp && firebaseAuth && firebaseDB && firebaseStorage) {
-    return { app: firebaseApp, auth: firebaseAuth, db: firebaseDB, storage: firebaseStorage };
-  }
+  if (typeof window === 'undefined') return null;
   
   try {
     // すでに初期化済みの場合は既存のアプリを使用
@@ -47,10 +39,10 @@ function initializeFirebase() {
     }
 
     // Services を初期化
-    if (firebaseApp) {
-      if (!firebaseAuth) firebaseAuth = getAuth(firebaseApp);
-      if (!firebaseDB) firebaseDB = getFirestore(firebaseApp);
-      if (!firebaseStorage) firebaseStorage = getStorage(firebaseApp);
+    if (firebaseApp && !firebaseAuth) {
+      firebaseAuth = getAuth(firebaseApp);
+      firebaseDB = getFirestore(firebaseApp);
+      firebaseStorage = getStorage(firebaseApp);
     }
 
     return { app: firebaseApp, auth: firebaseAuth, db: firebaseDB, storage: firebaseStorage };
