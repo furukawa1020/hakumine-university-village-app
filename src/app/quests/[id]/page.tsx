@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import QuestDetailClient from './QuestDetailClient';
 
-// 静的エクスポート用のパラメータ生成
+// 静的エクスポート用のパラメータ生成 - Netlify対応
 export async function generateStaticParams() {
   // 空の配列を返してフォールバック処理に委ねる
   return [];
