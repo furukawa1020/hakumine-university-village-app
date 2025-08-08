@@ -13,11 +13,16 @@ export type SearchParams = {
   [key: string]: string | string[] | undefined;
 };
 
-// 静的パラメータ生成（必須） - 空の配列でフォールバック対応
+// dynamicParams を明示的に設定
+export const dynamicParams = true;
+
+// 静的パラメータ生成（必須） - サンプルパラメータを返す
 export async function generateStaticParams(): Promise<Params[]> {
-  // 静的エクスポートの場合、空の配列を返してすべてのパスをフォールバックで処理
-  // これによりビルド時にエラーを回避し、実行時にクライアント側で適切に処理される
-  return [];
+  // 静的エクスポートではサンプルパラメータを事前生成し、
+  // 他のパスは実行時にクライアント側で処理される
+  return [
+    { id: 'sample' }
+  ];
 }
 
 interface PageProps {
