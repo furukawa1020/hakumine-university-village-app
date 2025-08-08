@@ -2,28 +2,46 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useQuestStore } from '@/stores/questStore';
-import { useAuthStore } from '@/stores/authStore';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowLeft, 
+import Link from 'next/link';
+import {
+  ArrowLeft,
   Calendar,
+  Clock,
   MapPin,
   Users,
-  Clock,
   Star,
-  Phone,
-  Mail,
-  AlertCircle,
   CheckCircle,
   UserPlus,
   UserMinus,
+  AlertCircle,
+  Mail,
+  Phone,
   Trash2
 } from 'lucide-react';
-import Link from 'next/link';
-import { Quest } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useAuthStore } from '@/stores/authStore';
+import { useQuestStore } from '@/stores/questStore';
+import type { Quest } from '@/types';
+
+// 静的エクスポート用：サンプルのクエストIDを生成
+export async function generateStaticParams() {
+  // 実際の実装では、FirebaseやAPIからクエストIDを取得
+  // 今回はサンプルとして固定のIDを返す
+  const sampleQuestIds = [
+    'sample-quest-1',
+    'sample-quest-2', 
+    'sample-quest-3',
+    'orientation-2024',
+    'cleanup-2024',
+    'cooking-2024'
+  ];
+  
+  return sampleQuestIds.map((id) => ({
+    id: id,
+  }));
+}
 
 export default function QuestDetailPage() {
   const params = useParams();
@@ -143,7 +161,7 @@ export default function QuestDetailPage() {
     }).format(new Date(date));
   };
 
-  const isParticipating = quest && user && quest.participantsList.some(p => p.id === user.uid);
+  const isParticipating = quest && user && quest.participantsList?.some(p => p.id === user.uid);
   const canParticipate = quest && quest.status === 'open' && (!quest.capacity || quest.participants < quest.capacity);
 
   if (loading) {
