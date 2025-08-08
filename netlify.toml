@@ -1,5 +1,5 @@
 [build]
-  publish = ".next"
+  publish = "out"
   command = "npm install --legacy-peer-deps --omit=optional; npx next telemetry disable; npm run build"
 
 [build.environment]
@@ -9,5 +9,6 @@
   NODE_ENV = "production" 
   NEXT_TELEMETRY_DISABLED = "1"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+# 静的エクスポート用の設定では不要
+# [[plugins]]
+#   package = "@netlify/plugin-nextjs"

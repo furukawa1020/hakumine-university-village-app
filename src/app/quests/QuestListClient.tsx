@@ -23,16 +23,11 @@ import { Quest } from '@/types';
 import { XNavigation } from '@/components/navigation/XNavigation';
 
 export default function QuestListClient() {
-  const { user } = useAuthStore();
-  const { quests, loading, fetchQuests } = useQuestStore();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed'>('all');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    fetchQuests();
-  }, [fetchQuests]);
+  }, []);
 
   // SSR中は何もレンダリングしない
   if (!mounted) {
@@ -44,6 +39,20 @@ export default function QuestListClient() {
       </div>
     );
   }
+
+  // マウント後のみストアを使用
+  return <QuestListContent />;
+}
+
+function QuestListContent() {
+  const { user } = useAuthStore();
+  const { quests, loading, fetchQuests } = useQuestStore();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed'>('all');
+
+  useEffect(() => {
+    fetchQuests();
+  }, [fetchQuests]);
 
   const filteredQuests = quests.filter(quest => {
     const matchesSearch = quest.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
