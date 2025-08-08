@@ -35,8 +35,15 @@ export default function QuestDetailClient({ questId }: QuestDetailClientProps) {
   const [quest, setQuest] = useState<Quest | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     const loadQuest = async () => {
       if (questId) {
         try {
@@ -51,7 +58,18 @@ export default function QuestDetailClient({ questId }: QuestDetailClientProps) {
     };
 
     loadQuest();
-  }, [questId, fetchQuestById]);
+  }, [questId, fetchQuestById, mounted]);
+
+  // SSR中は何もレンダリングしない
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-gray-600">
+          クエスト詳細を読み込んでいます...
+        </div>
+      </div>
+    );
+  }
 
   const handleParticipate = async () => {
     if (!user || !quest) return;

@@ -6,17 +6,10 @@ import QuestDetailClient from './QuestDetailClient';
 
 // 静的パラメータ生成（必須）
 export async function generateStaticParams() {
-  // 静的エクスポートでは事前にパスを生成する必要があります
-  // 実際のFirebaseデータは取得できないため、プレースホルダーを使用
-  // 実際のアプリでは、ここでFirebaseからクエストIDリストを取得します
-  return [
-    { id: 'sample-quest-1' },
-    { id: 'sample-quest-2' },
-    { id: 'sample-quest-3' },
-  ];
+  // 静的エクスポート用に空配列を返す
+  // 実際のクエストIDは実行時に動的に処理される
+  return [];
 }
-
-export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: { id: string };
