@@ -4,8 +4,11 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import QuestDetailClient from './QuestDetailClient';
 
-// 動的ルートでの静的生成を無効化
-export const dynamic = 'force-dynamic';
+// 静的パスを生成（空の配列でフォールバック）
+export async function generateStaticParams() {
+  // 空の配列を返すことで、すべてのパスをfallback時に生成
+  return [];
+}
 
 interface PageProps {
   params: { id: string };

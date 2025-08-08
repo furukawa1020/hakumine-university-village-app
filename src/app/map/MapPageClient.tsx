@@ -40,16 +40,33 @@ export default function MapPageClient() {
   } = useLocationStore();
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // 初期データ取得
-    fetchUserLocations();
-    
-    // リアルタイム更新を開始
-    const unsubscribe = subscribeToLocationUpdates();
-    
-    return unsubscribe;
-  }, [fetchUserLocations, subscribeToLocationUpdates]);
+    setMounted(true);
+    if (mounted) {
+      // 初期データ取得
+      fetchUserLocations();
+      
+      // リアルタイム更新を開始
+      const unsubscribe = subscribeToLocationUpdates();
+      
+      return unsubscribe;
+    }
+  }, [mounted, fetchUserLocations, subscribeToLocationUpdates]);
+
+  // SSR中は何もレンダリングしない
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-pulse text-gray-600">
+            マップ機能を読み込んでいます...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // 位置情報取得
   useEffect(() => {

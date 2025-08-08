@@ -1,9 +1,6 @@
 import { Suspense } from 'react';
 import dynamicImport from 'next/dynamic';
 
-// 動的レンダリングを強制
-export const dynamic = 'force-dynamic';
-
 // Leafletは クライアントサイドでのみ動作するため、動的インポートを使用
 const MapPageClient = dynamicImport(() => import('./MapPageClient'), {
   ssr: false,

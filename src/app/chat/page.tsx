@@ -1,9 +1,6 @@
 import { Suspense } from 'react';
 import ChatPageClient from './ChatPageClient';
 
-// 動的レンダリングを強制
-export const dynamic = 'force-dynamic';
-
 export default function ChatPage() {
   return (
     <Suspense fallback={

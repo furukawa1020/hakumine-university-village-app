@@ -27,10 +27,23 @@ export default function QuestListClient() {
   const { quests, loading, fetchQuests } = useQuestStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed'>('all');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     fetchQuests();
   }, [fetchQuests]);
+
+  // SSR中は何もレンダリングしない
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-gray-600">
+          クエスト情報を読み込んでいます...
+        </div>
+      </div>
+    );
+  }
 
   const filteredQuests = quests.filter(quest => {
     const matchesSearch = quest.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

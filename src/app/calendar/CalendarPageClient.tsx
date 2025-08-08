@@ -43,6 +43,7 @@ export default function CalendarPageClient() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [eventType, setEventType] = useState<'personal' | 'stay'>('personal');
+  const [mounted, setMounted] = useState(false);
   
   // フォーム状態
   const [newEventTitle, setNewEventTitle] = useState('');
@@ -55,13 +56,28 @@ export default function CalendarPageClient() {
   const month = currentDate.getMonth();
 
   useEffect(() => {
-    const today = new Date();
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    
-    fetchEvents(startOfMonth, endOfMonth);
-    fetchStayEvents(startOfMonth, endOfMonth);
-  }, [fetchEvents, fetchStayEvents]);
+    setMounted(true);
+    if (mounted) {
+      const today = new Date();
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      
+      fetchEvents(startOfMonth, endOfMonth);
+      fetchStayEvents(startOfMonth, endOfMonth);
+    }
+  }, [mounted, fetchEvents, fetchStayEvents]);
+
+  // SSR中は何もレンダリングしない
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
+        <div className="text-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">カレンダーを読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
 
   // カレンダーの日付を生成
   const generateCalendarDays = () => {
