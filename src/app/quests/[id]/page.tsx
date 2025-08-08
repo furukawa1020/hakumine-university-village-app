@@ -13,23 +13,11 @@ export type SearchParams = {
   [key: string]: string | string[] | undefined;
 };
 
-// 静的パラメータ生成（必須） - より明示的な実装
+// 静的パラメータ生成（必須） - 空の配列でフォールバック対応
 export async function generateStaticParams(): Promise<Params[]> {
-  // 静的エクスポート用により多くのサンプルIDを返す
-  // これによりNext.jsがこれらのパスを事前生成し、
-  // Netlifyでの静的エクスポート要件を満たします
-  return [
-    { id: 'quest-1' },
-    { id: 'quest-2' },
-    { id: 'quest-3' },
-    { id: 'quest-4' },
-    { id: 'quest-5' },
-    { id: 'sample' },
-    { id: 'demo' },
-    { id: 'test' },
-    { id: 'example' },
-    { id: 'default' }
-  ];
+  // 静的エクスポートの場合、空の配列を返してすべてのパスをフォールバックで処理
+  // これによりビルド時にエラーを回避し、実行時にクライアント側で適切に処理される
+  return [];
 }
 
 interface PageProps {

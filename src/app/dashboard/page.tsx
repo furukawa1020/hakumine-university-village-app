@@ -25,10 +25,32 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { XNavigation } from '@/components/navigation/XNavigation';
 
-// 静的生成を無効化
-export const dynamic = 'force-dynamic';
-
 export default function DashboardPage() {
+  const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // SSR中は何もレンダリングしない
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
+        <div className="text-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">ダッシュボードを読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <DashboardPageContent />;
+}
+
+function DashboardPageContent() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
