@@ -1,9 +1,6 @@
 import { Suspense } from 'react';
 import ChatPageClient from './ChatPageClient';
 
-// 動的レンダリングを有効化（SSRエラー解決）
-export const dynamic = 'force-dynamic';
-
 export default function ChatPage() {
   return (
     <Suspense fallback={

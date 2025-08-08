@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Netlifyの動的レンダリング対応（静的エクスポートを無効化）
-  // output: 'export', // 一時的に無効化
+  // Netlify向け静的エクスポート設定
+  output: 'export',
   trailingSlash: true,
-  // distDir: 'out', // 静的エクスポート専用なのでコメントアウト
+  distDir: 'out',
   images: {
     unoptimized: true
   },
