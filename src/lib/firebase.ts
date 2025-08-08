@@ -5,13 +5,13 @@ import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
 // Firebase設定
 const firebaseConfig = {
-  apiKey: "AIzaSyAEq7IxIneu-SA6-d-xdCZC2OU8cArJr84",
-  authDomain: "hakumine-university-village.firebaseapp.com",
-  projectId: "hakumine-university-village",
-  storageBucket: "hakumine-university-village.firebasestorage.app",
-  messagingSenderId: "710646321611",
-  appId: "1:710646321611:web:29562c376f4127f0a1664e",
-  measurementId: "G-0NBD8MDRZX"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Firebase Services（動的初期化）
