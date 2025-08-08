@@ -28,6 +28,29 @@ const monthNames = [
 const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
 
 export default function CalendarPageClient() {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // SSR中は何もレンダリングしない
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
+        <div className="text-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">カレンダーを読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // マウント後のみストアを使用
+  return <CalendarPageContent />;
+}
+
+function CalendarPageContent() {
   const { user } = useAuthStore();
   const {
     events,
@@ -43,7 +66,6 @@ export default function CalendarPageClient() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [eventType, setEventType] = useState<'personal' | 'stay'>('personal');
-  const [mounted, setMounted] = useState(false);
   
   // フォーム状態
   const [newEventTitle, setNewEventTitle] = useState('');
@@ -56,28 +78,13 @@ export default function CalendarPageClient() {
   const month = currentDate.getMonth();
 
   useEffect(() => {
-    setMounted(true);
-    if (mounted) {
-      const today = new Date();
-      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-      
-      fetchEvents(startOfMonth, endOfMonth);
-      fetchStayEvents(startOfMonth, endOfMonth);
-    }
-  }, [mounted, fetchEvents, fetchStayEvents]);
-
-  // SSR中は何もレンダリングしない
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100">
-        <div className="text-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">カレンダーを読み込み中...</p>
-        </div>
-      </div>
-    );
-  }
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    
+    fetchEvents(startOfMonth, endOfMonth);
+    fetchStayEvents(startOfMonth, endOfMonth);
+  }, [fetchEvents, fetchStayEvents]);
 
   // カレンダーの日付を生成
   const generateCalendarDays = () => {
