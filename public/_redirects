@@ -1,2 +1,5 @@
-# Netlify SPA redirects for Next.js static export
+# Netlify redirects for Next.js static export
+# 動的ルート用のクライアントサイドルーティングサポート
+/quests/:id/*  /quests/:id/index.html  200
+# SPAフォールバック（最後のルール）
 /*    /index.html   200

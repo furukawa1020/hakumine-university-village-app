@@ -4,11 +4,32 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import QuestDetailClient from './QuestDetailClient';
 
-// 静的パラメータ生成（必須）
-export async function generateStaticParams() {
-  // 静的エクスポート用に空配列を返す
-  // 実際のクエストIDは実行時に動的に処理される
-  return [];
+// 型定義を明示的に追加
+export type Params = {
+  id: string;
+};
+
+export type SearchParams = {
+  [key: string]: string | string[] | undefined;
+};
+
+// 静的パラメータ生成（必須） - より明示的な実装
+export async function generateStaticParams(): Promise<Params[]> {
+  // 静的エクスポート用により多くのサンプルIDを返す
+  // これによりNext.jsがこれらのパスを事前生成し、
+  // Netlifyでの静的エクスポート要件を満たします
+  return [
+    { id: 'quest-1' },
+    { id: 'quest-2' },
+    { id: 'quest-3' },
+    { id: 'quest-4' },
+    { id: 'quest-5' },
+    { id: 'sample' },
+    { id: 'demo' },
+    { id: 'test' },
+    { id: 'example' },
+    { id: 'default' }
+  ];
 }
 
 interface PageProps {

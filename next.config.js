@@ -8,6 +8,9 @@ const nextConfig = {
     unoptimized: true
   },
   
+  // 静的エクスポート用の追加設定
+  skipTrailingSlashRedirect: true,
+  
   // 実験的機能の設定
   experimental: {
     // その他の実験的機能（leafletパッケージは削除）
