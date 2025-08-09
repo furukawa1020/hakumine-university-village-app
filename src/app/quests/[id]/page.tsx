@@ -5,9 +5,14 @@ import { Button } from '@/components/ui/button';
 import QuestDetailClient from './QuestDetailClient';
 
 // 静的エクスポート用のパラメータ生成 - Netlify対応
-export async function generateStaticParams() {
-  // 静的エクスポートでは空の配列を返してfallbackを有効にする
-  return [];
+export async function generateStaticParams(): Promise<{ id: string }[]> {
+  // 静的エクスポートの場合、最低限のサンプルパスを生成
+  // 実際のプロダクションでは、データベースからクエストIDを取得する
+  return [
+    { id: 'sample-1' },
+    { id: 'sample-2' },
+    { id: 'sample-3' }
+  ];
 }
 
 // 型定義を明示的に追加
