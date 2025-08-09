@@ -1,6 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect function QuestListContent() {
+  const { user } = useAuthStore();
+  const { quests, loading, fetchQuests } = useQuestStore();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'in_progress' | 'completed'>('all');m 'react';
 import { useQuestStore } from '@/stores/questStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -166,18 +172,24 @@ function QuestListContent() {
         {/* Quest Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQuests.map((quest) => (
-            <Link key={quest.id} href={`/quests/${quest.id}`}>
-              <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer bg-white/70 backdrop-blur-sm">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">{quest.title}</CardTitle>
-                      {getStatusBadge(quest.status)}
-                    </div>
-                    <div className="flex items-center text-amber-500">
-                      <Star className="h-4 w-4 mr-1" />
-                      <span className="text-sm font-medium">10</span>
-                    </div>
+            <Card 
+              key={quest.id}
+              className="h-full hover:shadow-lg transition-shadow cursor-pointer bg-white/70 backdrop-blur-sm"
+              onClick={() => {
+                setSelectedQuest(quest);
+                setShowModal(true);
+              }}
+            >
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg mb-2">{quest.title}</CardTitle>
+                    {getStatusBadge(quest.status)}
+                  </div>
+                  <div className="flex items-center text-amber-500">
+                    <Star className="h-4 w-4 mr-1" />
+                    <span className="text-sm font-medium">10</span>
+                  </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -203,7 +215,6 @@ function QuestListContent() {
                   </div>
                 </CardContent>
               </Card>
-            </Link>
           ))}
         </div>
 
@@ -224,6 +235,63 @@ function QuestListContent() {
             </Card>
           </div>
         )}
+
+        {/* Quest Detail Modal */}
+        {showModal && selectedQuest && (
+          <QuestDetailModal 
+            quest={selectedQuest}
+            onClose={() => {
+              setShowModal(false);
+              setSelectedQuest(null);
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Quest Detail Modal Component
+function QuestDetailModal({ quest, onClose }: { quest: Quest; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold">{quest.title}</h2>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              ×
+            </Button>
+          </div>
+          
+          <div className="space-y-4">
+            <p className="text-gray-600">{quest.description}</p>
+            
+            <div className="flex items-center space-x-4">
+              <Badge variant="outline">{quest.status}</Badge>
+              <div className="flex items-center">
+                <Star className="h-4 w-4 mr-1 text-amber-500" />
+                <span>10 ポイント</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4 text-sm text-gray-500">
+              <div className="flex items-center">
+                <Calendar className="h-4 w-4 mr-1" />
+                <span>{quest.startDate} - {quest.endDate}</span>
+              </div>
+              <div className="flex items-center">
+                <Users className="h-4 w-4 mr-1" />
+                <span>{quest.participants} / {quest.capacity || '∞'}</span>
+              </div>
+            </div>
+            
+            <div className="flex space-x-2 pt-4">
+              <Button className="flex-1">参加する</Button>
+              <Button variant="outline" onClick={onClose}>閉じる</Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
