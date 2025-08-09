@@ -1,6 +1,6 @@
 [build]
   publish = "out"
-  command = "npm install && npm run build"
+  command = "npm install --production=false && npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
@@ -8,8 +8,6 @@
   NODE_OPTIONS = "--max-old-space-size=4096"
   NODE_ENV = "production" 
   NEXT_TELEMETRY_DISABLED = "1"
-
-# 静的エクスポート用の設定では@netlify/plugin-nextjsは不要
 
 # 静的エクスポート用の設定では不要
 # [[plugins]]
