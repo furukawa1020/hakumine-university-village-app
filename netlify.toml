@@ -1,6 +1,6 @@
 [build]
   publish = "out"
-  command = "npm install --legacy-peer-deps --omit=optional; npx next telemetry disable; npm run build"
+  command = "npm install --legacy-peer-deps; npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
