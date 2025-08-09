@@ -1,8 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { PWAInstallButton } from "@/components/ui/PWAInstallButton";
-import { AuthInitializer } from "@/components/AuthInitializer";
+import dynamic from 'next/dynamic';
+
+// AuthInitializerを動的インポート（SSR無効）
+const AuthInitializer = dynamic(() => import('@/components/AuthInitializer').then(mod => ({ default: mod.AuthInitializer })), {
+  ssr: false,
+  loading: () => <div>Loading...</div>
+});
+
+// PWAInstallButtonを動的インポート（SSR無効）
+const PWAInstallButton = dynamic(() => import('@/components/ui/PWAInstallButton').then(mod => ({ default: mod.PWAInstallButton })), {
+  ssr: false,
+  loading: () => null
+});
 
 const inter = Inter({
   variable: "--font-inter",
