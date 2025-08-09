@@ -17,8 +17,10 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', '@headlessui/react'],
   },
   
-  // SWC設定の明示化 - Netlify対応
-  swcMinify: true,
+  // Next.js 15対応のコンパイラ設定
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production'
+  },
   
   // Firebase設定
   env: {

@@ -1,13 +1,15 @@
 [build]
   publish = "out"
-  command = "npm install --legacy-peer-deps; npm run build"
+  command = "npm ci && npm run build"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "18"
   NPM_VERSION = "10"
   NODE_OPTIONS = "--max-old-space-size=4096"
   NODE_ENV = "production" 
   NEXT_TELEMETRY_DISABLED = "1"
+  # Next.js 14用の設定を強制
+  SKIP_ENV_VALIDATION = "1"
 
 # 静的エクスポート用の設定では不要
 # [[plugins]]
