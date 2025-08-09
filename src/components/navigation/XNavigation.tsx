@@ -12,8 +12,6 @@ import {
   Settings,
   MapPin,
   Trophy,
-  Calendar,
-  MessageCircle,
   BookOpen
 } from 'lucide-react';
 
@@ -41,13 +39,6 @@ const navItems = [
     icon: BookOpen, 
     label: '日記',
     activeColor: 'text-pink-500 bg-pink-50'
-  },
-  { 
-    href: '/chat', 
-    icon: MessageCircle, 
-    label: 'チャット',
-    activeColor: 'text-orange-500 bg-orange-50',
-    badge: 3 // 未読数
   }
 ];
 
@@ -58,7 +49,7 @@ export const XNavigation = () => {
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200/50 shadow-2xl">
       <div className="max-w-md mx-auto px-2">
         <div className="flex items-center justify-around py-1">
-          {navItems.map(({ href, icon: Icon, label, activeColor, badge }) => {
+          {navItems.map(({ href, icon: Icon, label, activeColor }) => {
             const isActive = pathname === href || 
                            (href === '/quest' && pathname.startsWith('/quests')) ||
                            (href === '/diary' && pathname.startsWith('/diary')) ||
@@ -85,15 +76,6 @@ export const XNavigation = () => {
                     }`}
                     strokeWidth={isActive ? 2.5 : 2}
                   />
-                  
-                  {/* バッジ（未読数） */}
-                  {badge && badge > 0 && (
-                    <div className="absolute -top-2 -right-2 min-w-[18px] h-[18px] bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-                      <span className="text-xs text-white font-bold leading-none">
-                        {badge > 99 ? '99+' : badge}
-                      </span>
-                    </div>
-                  )}
                   
                   {/* アクティブ時のドット */}
                   {isActive && (
