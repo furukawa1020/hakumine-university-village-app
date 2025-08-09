@@ -29,7 +29,7 @@ export default function QuestListClient() {
     setMounted(true);
   }, []);
 
-  // SSR中は何もレンダリングしない
+  // SSR中は何もレンダリングしない - 静的エクスポート対応
   if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center">

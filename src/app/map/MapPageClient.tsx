@@ -24,6 +24,28 @@ import { XNavigation } from '@/components/navigation/XNavigation';
 const HAKUMINE_CENTER = [36.2547, 136.6342] as [number, number];
 
 export default function MapPageClient() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // SSR中は何もレンダリングしない - 静的エクスポート対応
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center">
+        <div className="animate-pulse text-gray-600">
+          マップ機能を読み込んでいます...
+        </div>
+      </div>
+    );
+  }
+
+  // マウント後のみストアを使用
+  return <MapPageContent />;
+}
+
+function MapPageContent() {
   const { user } = useAuthStore();
   const {
     userLocations,
@@ -40,33 +62,16 @@ export default function MapPageClient() {
   } = useLocationStore();
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    if (mounted) {
-      // 初期データ取得
-      fetchUserLocations();
-      
-      // リアルタイム更新を開始
-      const unsubscribe = subscribeToLocationUpdates();
-      
-      return unsubscribe;
-    }
-  }, [mounted, fetchUserLocations, subscribeToLocationUpdates]);
-
-  // SSR中は何もレンダリングしない
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-pulse text-gray-600">
-            マップ機能を読み込んでいます...
-          </div>
-        </div>
-      </div>
-    );
-  }
+    // 初期データ取得
+    fetchUserLocations();
+    
+    // リアルタイム更新を開始
+    const unsubscribe = subscribeToLocationUpdates();
+    
+    return unsubscribe;
+  }, [fetchUserLocations, subscribeToLocationUpdates]);
 
   // 位置情報取得
   useEffect(() => {

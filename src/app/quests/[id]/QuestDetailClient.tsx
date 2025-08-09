@@ -29,21 +29,35 @@ interface QuestDetailClientProps {
 }
 
 export default function QuestDetailClient({ questId }: QuestDetailClientProps) {
-  const router = useRouter();
-  const { user } = useAuthStore();
-  const { fetchQuestById, participateInQuest, cancelParticipation, deleteQuest } = useQuestStore();
-  const [quest, setQuest] = useState<Quest | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // SSR中は何もレンダリングしない - 静的エクスポート対応
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-gray-600">
+          クエスト詳細を読み込んでいます...
+        </div>
+      </div>
+    );
+  }
+
+  return <QuestDetailContent questId={questId} />;
+}
+
+function QuestDetailContent({ questId }: QuestDetailClientProps) {
+  const router = useRouter();
+  const { user } = useAuthStore();
+  const { fetchQuestById, participateInQuest, cancelParticipation, deleteQuest } = useQuestStore();
+  const [quest, setQuest] = useState<Quest | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+
   useEffect(() => {
-    if (!mounted) return;
-    
     const loadQuest = async () => {
       if (questId) {
         try {
@@ -58,18 +72,7 @@ export default function QuestDetailClient({ questId }: QuestDetailClientProps) {
     };
 
     loadQuest();
-  }, [questId, fetchQuestById, mounted]);
-
-  // SSR中は何もレンダリングしない
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-gray-600">
-          クエスト詳細を読み込んでいます...
-        </div>
-      </div>
-    );
-  }
+  }, [questId, fetchQuestById]);
 
   const handleParticipate = async () => {
     if (!user || !quest) return;
