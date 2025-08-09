@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
-import dynamicImport from 'next/dynamic';
+import dynamic from 'next/dynamic';
 
 // Leafletは クライアントサイドでのみ動作するため、動的インポートを使用
-const MapPageClient = dynamicImport(() => import('./MapPageClient'), {
+const MapPageClient = dynamic(() => import('./MapPageClient'), {
   ssr: false,
   loading: () => (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center">
